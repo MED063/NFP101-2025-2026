@@ -5,5 +5,5 @@ class Voiture:
 v1=Voiture()
 print(v1)
 print('\n')
-v1=Voiture()
-print(v1)
+v2=Voiture()
+print(v2)

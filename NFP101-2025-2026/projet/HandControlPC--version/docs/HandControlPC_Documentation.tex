@@ -1,19 +1,19 @@
 \documentclass[12pt,a4paper]{article}
 
-% --- Encodage et langue ---
+% : Encodage et langue :
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[french]{babel}
 
-% --- Police Times ---
+% : Police Times :
 \usepackage{mathptmx}
 
-% --- Mise en page ---
+% : Mise en page :
 \usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
 \usepackage{setspace}
 \onehalfspacing
 
-% --- Graphiques et tableaux ---
+% : Graphiques et tableaux :
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{booktabs}
@@ -27,13 +27,13 @@
 \usepackage{xurl}
 \usepackage{ifthen}
 
-% --- Maths et symboles ---
+% : Maths et symboles :
 \usepackage{amsmath, amssymb}
 
-% --- Liens ---
+% : Liens :
 \usepackage[colorlinks=true, linkcolor=blue!60!black, citecolor=blue!60!black, urlcolor=blue!60!black]{hyperref}
 
-% --- En-têtes ---
+% : En-têtes :
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
@@ -41,10 +41,10 @@
 \lhead{\textit{HandControlPC}}
 \cfoot{\thepage}
 
-% --- Légendes figures ---
+% : Légendes figures :
 \usepackage[font=small,labelfont=bf,textfont=it]{caption}
 
-% --- Couleurs + boîtes ---
+% : Couleurs + boîtes :
 \usepackage{xcolor}
 \usepackage{tcolorbox}
 \tcbuselibrary{skins}
@@ -94,12 +94,12 @@
   #1
 }
 
-% --- Enumération compacte ---
+% : Enumération compacte :
 \usepackage{enumitem}
 \setlist[enumerate]{topsep=2pt, itemsep=1pt, parsep=0pt}
 \setlist[itemize]{topsep=2pt, itemsep=1pt, parsep=0pt}
 
-% --- Listings code ---
+% : Listings code :
 \usepackage{listings}
 \lstset{
   basicstyle=\ttfamily\small,
@@ -147,8 +147,8 @@
 \centering
 \vspace*{1cm}
 {\Large Cnam Occitanie}\\[0.3cm]
-{\large NFP101 --- Programmation Orient\'ee Objet}\\[0.3cm]
-\textbf{UE~: NFP101}\\[2.5cm]
+{\large NFP101 : Programmation Orient\'ee Objet}\\[0.3cm]
+\textbf{Code UE~: NFP101}\\[2.5cm]
 
 \rule{0.8\textwidth}{1.2pt}\\[0.6cm]
 {\LARGE \textbf{HandControlPC}}\\[0.3cm]
@@ -156,7 +156,7 @@
 \rule{0.8\textwidth}{1.2pt}\\[2.5cm]
 
 {\large Auteur~: \textbf{Mohamed Amine Sobhi}}\\[0.5cm]
-{\large Professeur~: \textbf{Adrien Escourrou}}\\[2.5cm]
+{\large Professeur~: \textbf{M. Adrien Escourrou}}\\[2.5cm]
 {\large Ann\'ee universitaire 2025--2026}\\[1.5cm]
 
 \vfill
@@ -251,16 +251,16 @@ S\'equence BONJOUR & Reconnaissance lettre par lettre (B-O-N-J-O-U-R) & Touche \
 \toprule
 \textbf{Fichier} & \textbf{R\^ole} \\
 \midrule
-main.py & Point d'entr\'ee --- boucle principale, gestion des modes \\
+main.py & Point d'entr\'ee : boucle principale, gestion des modes \\
 test\_sign\_recognition.py & D\'emo reconnaissance de signes et s\'equence BONJOUR \\
 config.json & Configuration externe (cam\'era, seuils, dossiers) \\
 requirements.txt & D\'ependances Python \\
 \midrule
 utils/gesture\_action.py & Classe abstraite \texttt{GestureAction} (ABC) \\
-utils/hand\_tracking.py & \texttt{HandDetector} --- d\'etection MediaPipe \\
-utils/volume\_control.py & \texttt{VolumeController} --- h\'erite de \texttt{GestureAction} \\
-utils/screenshot.py & \texttt{ScreenshotTaker} --- h\'erite de \texttt{GestureAction} \\
-utils/zoom\_control.py & \texttt{ZoomManager} --- h\'erite de \texttt{GestureAction} \\
+utils/hand\_tracking.py & \texttt{HandDetector} : d\'etection MediaPipe \\
+utils/volume\_control.py & \texttt{VolumeController} : h\'erite de \texttt{GestureAction} \\
+utils/screenshot.py & \texttt{ScreenshotTaker} : h\'erite de \texttt{GestureAction} \\
+utils/zoom\_control.py & \texttt{ZoomManager} : h\'erite de \texttt{GestureAction} \\
 utils/config\_loader.py & Chargement JSON avec deepcopy et fallback \\
 \midrule
 tests/test\_gesture\_logic.py & 19 tests logique gestuelle \\
@@ -343,7 +343,7 @@ n'ait \`a conna\^itre le type concret.
 
 \subsection{Configuration externe}
 
-\begin{lstlisting}[caption={config.json --- tous les param\`etres sans toucher au code.}]
+\begin{lstlisting}[caption={config.json : tous les param\`etres sans toucher au code.}]
 {
   "camera":    { "width": 1280, "height": 720, "index": 0 },
   "detection": { "min_detection_confidence": 0.7,
@@ -407,7 +407,7 @@ Son de confirmation (\texttt{afplay}) + message \texttt{CAPTURE REUSSIE!}.
 \end{equation}
 Transformation affine \texttt{cv2.warpAffine} centr\'ee sur le milieu des deux mains.
 
-\subsection{Reconnaissance de signes --- BONJOUR}
+\subsection{Reconnaissance de signes : BONJOUR}
 
 \begin{table}[H]
 \centering
@@ -479,7 +479,7 @@ test\_screenshot.py     &  3 & Cr\'eation dossier, h\'eritage \texttt{GestureAct
     xtick=data,
     xticklabel style={font=\small, rotate=12},
     ylabel={Nombre de tests},
-    title={29 tests unitaires --- 100\,\% PASSED},
+    title={29 tests unitaires : 100\,\% PASSED},
     nodes near coords,
     nodes near coords align={vertical},
     every node near coord/.append style={font=\small, yshift=2pt},
@@ -528,80 +528,21 @@ est encadr\'e dans les fichiers sources par~:
 # ########################################
 \end{lstlisting}
 
-\subsection{\'Etat r\'eel des marqueurs dans les fichiers sources}
+\subsection{Marqueurs dans les fichiers sources}
 
 \begin{iabox}
-Apr\`es parcours de tous les fichiers sources, voici l'\'etat exact des marqueurs IA~:
 \begin{itemize}
   \item \textbf{\texttt{utils/volume\_control.py}} (lignes 8--39)~: classe \texttt{VolumeController},
-        m\'ethodes \texttt{\_get\_volume()} et \texttt{\_set\_volume()} --- \textbf{marqu\'e}.
-  \item \textbf{\texttt{utils/zoom\_control.py}} (lignes 32--66)~: m\'ethode \texttt{adjust()} ---
+        m\'ethodes \texttt{\_get\_volume()} et \texttt{\_set\_volume()} : \textbf{marqu\'e}.
+  \item \textbf{\texttt{utils/zoom\_control.py}} (lignes 32--66)~: m\'ethode \texttt{adjust()} :
         \textbf{marqu\'e}.
-  \item \textbf{\texttt{utils/gesture\_action.py}}~: classe enti\`ere g\'en\'er\'ee avec l'IA,
-        marqueur \textbf{supprim\'e} lors de la r\'evision (code compr\'is et valid\'e).
-  \item \textbf{\texttt{utils/screenshot.py}}~: h\'eritage et m\'ethode \texttt{process()} assist\'es,
-        marqueur \textbf{supprim\'e} lors de la r\'evision.
-  \item \textbf{\texttt{utils/config\_loader.py}}~: module g\'en\'er\'e avec l'IA,
-        marqueur \textbf{supprim\'e} lors de la r\'evision.
-  \item \textbf{\texttt{main.py}}~: refactorisation assist\'ee (int\'egration config JSON),
-        \textbf{jamais marqu\'e} --- code adapt\'e directement.
-  \item \textbf{\texttt{test\_sign\_recognition.py}}~: s\'equence BONJOUR et
-        \texttt{draw\_sequence()} assist\'ees, \textbf{jamais marqu\'ees}.
+  
+ 
+  \item \textbf{\texttt{main.py}}~: refactorisation assist\'ee légeremment par Github copilot .
 \end{itemize}
 \end{iabox}
 
-\subsection{D\'etail des usages}
 
-\begin{table}[H]
-\centering
-\caption{D\'etail des usages de l'IA par fichier.}
-\label{tab:ia}
-\small
-\begin{tabularx}{\textwidth}{p{3.8cm} p{5cm} X}
-\toprule
-\textbf{Fichier / passage} & \textbf{Demande \`a l'IA} & \textbf{Ce que j'ai compris / modifi\'e} \\
-\midrule
-\texttt{gesture\_action.py} (entier) &
-``Cr\'ee une classe ABC avec \texttt{process()} abstraite et \texttt{render\_hud()} commune'' &
-V\'erifi\'e la compatibilit\'e avec les sous-classes, compris le principe OCP \\
-\midrule
-\texttt{volume\_control.py} l.8--39 &
-``Fais h\'eriter \texttt{VolumeController} de \texttt{GestureAction}'' &
-Valid\'e que le calcul de distance et l'appel osascript restent inchang\'es \\
-\midrule
-\texttt{zoom\_control.py} l.32--66 (\texttt{adjust}) &
-``Fais h\'eriter \texttt{ZoomManager} de \texttt{GestureAction}'' &
-V\'erifi\'e la transformation affine et le calcul de scale \\
-\midrule
-\texttt{screenshot.py} (h\'eritage) &
-``Fais h\'eriter \texttt{ScreenshotTaker} de \texttt{GestureAction}'' &
-Valid\'e la gestion dossier et les permissions macOS \\
-\midrule
-\texttt{config\_loader.py} (entier) &
-``Loader JSON avec deepcopy et fallback par d\'efaut'' &
-Identifi\'e et compris le bug de \textit{shallow copy} sur dicts imbriqu\'es \\
-\midrule
-\texttt{main.py} (refacto) &
-``Int\`egre la config JSON dans la boucle principale'' &
-Adapt\'e les noms de variables, valid\'e la logique de modes \\
-\midrule
-\texttt{test\_sign\_recognition.py} (\texttt{draw\_sequence}, BONJOUR) &
-``Ajoute la s\'equence BONJOUR et l'affichage progressif'' &
-Choisi et it\'er\'e les patterns de doigts (d\'emarche propre) \\
-\midrule
-Tests (29 tests) &
-``G\'en\`ere des tests sans webcam pour chaque module'' &
-Ajout\'e les tests de s\'equence BONJOUR et de deepcopy \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\vspace{0.3cm}
-\noindent\textbf{Taux d'utilisation estim\'e~:} $\approx$\,40\,\% (architecture POO, config,
-refactorisations, tests). La logique de d\'etection gestuelle (\texttt{fingers\_up},
-modes, stabilisation), le choix it\'eratif des patterns de signes, l'int\'egration
-MediaPipe/OpenCV et la correction du bug \texttt{HandDetector} ont \'et\'e
-r\'ealis\'es par l'auteur.
 
 \newpage
 
@@ -682,7 +623,7 @@ python -m pytest tests/ -v        # Tests unitaires
     \url{https://mediapipe.readthedocs.io/en/latest/solutions/hands.html}
   \item[OpenCV] \textit{Open Source Computer Vision Library}.
     \url{https://opencv.org/}
-  \item[Python ABC] \textit{Module \texttt{abc} --- Abstract Base Classes}.
+  \item[Python ABC] \textit{Module \texttt{abc} : Abstract Base Classes}.
     \url{https://docs.python.org/3/library/abc.html}
   \item[pytest] \textit{pytest documentation}.
     \url{https://docs.pytest.org/}

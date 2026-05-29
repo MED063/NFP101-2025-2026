@@ -138,6 +138,7 @@
 
 \begin{frame}{Les diverses \'etapes du projet}
   \begin{center}
+  \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
     node distance=0.35cm,
     nbox/.style={rectangle, draw=cnamblue, fill=cnamblue!10, rounded corners=4pt,
@@ -153,7 +154,8 @@
     \draw[arrow] (s2)--(s3);
     \draw[arrow] (s3)--(s4);
     \draw[arrow] (s4)--(s5);
-  \end{tikzpicture}
+  \end{tikzpicture}%
+  }
   \end{center}
   \vspace{0.5cm}
   \begin{itemize}
@@ -222,13 +224,14 @@
 % ============================================================
 
 \begin{frame}{Architecture~: h\'eritage et polymorphisme}
-  \begin{columns}
-    \begin{column}{0.52\textwidth}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
       \begin{center}
+      \resizebox{\linewidth}{!}{%
       \begin{tikzpicture}[
-        node distance=0.7cm and 0.4cm,
+        node distance=0.9cm and 0.35cm,
         cbox/.style={rectangle, draw=cnamblue, fill=cnamblue!8, rounded corners=3pt,
-                     minimum width=2.6cm, minimum height=0.75cm, align=center, font=\scriptsize\ttfamily},
+                     minimum width=2.6cm, minimum height=0.8cm, align=center, font=\scriptsize\ttfamily},
         abox/.style={cbox, fill=steelblue!25, draw=steelblue, font=\scriptsize\ttfamily\bfseries},
         ar/.style={-{Latex[length=2.5mm]}, thick, draw=cnamblue}
       ]
@@ -239,20 +242,21 @@
         \draw[ar] (vc)--(ga);
         \draw[ar] (st)--(ga);
         \draw[ar] (zm)--(ga);
-      \end{tikzpicture}
+      \end{tikzpicture}%
+      }
       \end{center}
     \end{column}
-    \begin{column}{0.48\textwidth}
+    \begin{column}{0.52\textwidth}
       \begin{block}{Choix cl\'es}
         \begin{itemize}
           \item \texttt{process()} \textbf{abstraite} : chaque mode sa logique.
           \item \texttt{render\_hud()} \textbf{h\'erit\'ee} : affichage commun.
-          \item Principe \textbf{Open/Closed} : ajouter un mode = une sous-classe.
+          \item \textbf{Open/Closed} : ajouter un mode = une sous-classe.
         \end{itemize}
       \end{block}
     \end{column}
   \end{columns}
-  \vspace{0.2cm}
+  \vspace{0.3cm}
   \begin{exampleblock}{Polymorphisme}
     \texttt{main.py} manipule les actions via l'interface commune \texttt{GestureAction}.
   \end{exampleblock}
@@ -260,6 +264,7 @@
 
 \begin{frame}{Pipeline temps r\'eel et stack technique}
   \begin{center}
+  \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
     node distance=0.3cm,
     nbox/.style={rectangle, draw=cnamblue, fill=cnamblue!8, rounded corners=3pt,
@@ -274,7 +279,8 @@
     \node[nbox, right=of md]  (sys) {Action OS};
     \draw[arrow] (cam)--(mp); \draw[arrow] (mp)--(lm); \draw[arrow] (lm)--(fp);
     \draw[arrow] (fp)--(md);  \draw[arrow] (md)--(sys);
-  \end{tikzpicture}
+  \end{tikzpicture}%
+  }
   \end{center}
   \vspace{0.4cm}
   \begin{columns}
@@ -358,18 +364,17 @@
 \end{frame}
 
 \begin{frame}{Utilisation de l'IA --- transparence}
-  \begin{block}{IA utilis\'ee~: Claude Code (Anthropic)}
-    Code g\'en\'er\'e/assist\'e encadr\'e par \texttt{\# CODE IA (Claude)} dans les sources.
+  \begin{block}{IA d\'eclar\'ees}
+    Code assist\'e encadr\'e par \texttt{\# CODE IA (Claude)} dans les fichiers sources concern\'es.
   \end{block}
-  \vspace{0.2cm}
-  \begin{columns}
+  \vspace{0.15cm}
+  \begin{columns}[T]
     \begin{column}{0.5\textwidth}
-      \textbf{O\`u l'IA a aid\'e}
+      \textbf{O\`u l'IA est marqu\'ee}
       \begin{itemize}
-        \item Classe abstraite \texttt{GestureAction}
-        \item Refactorisation h\'eritage
-        \item Loader config + tests
-        \item Documentation
+        \item \textbf{Claude} --- \texttt{volume\_control.py}\\(classe + \texttt{\_get/\_set\_volume})
+        \item \textbf{Claude} --- \texttt{zoom\_control.py}\\(m\'ethode \texttt{adjust()})
+        \item \textbf{GitHub Copilot} --- \texttt{main.py}\\(refactorisation l\'eg\`ere)
       \end{itemize}
     \end{column}
     \begin{column}{0.5\textwidth}
@@ -378,13 +383,13 @@
         \item Logique de d\'etection (\texttt{fingers\_up})
         \item Choix it\'eratif des patterns
         \item Int\'egration MediaPipe/OpenCV
-        \item Correction de bugs
+        \item Architecture POO et tests
       \end{itemize}
     \end{column}
   \end{columns}
-  \vspace{0.2cm}
+  \vspace{0.15cm}
   \begin{center}
-    \textbf{Taux d'utilisation estim\'e~: $\approx$ 40\,\%} (architecture, tests, doc)
+    \small Je peux expliquer chaque passage assist\'e devant le jury.
   \end{center}
 \end{frame}
 
@@ -439,9 +444,10 @@
       \item \textbf{MSS} --- capture d'\'ecran
     \end{itemize}
   \end{block}
-  \begin{block}{Intelligence artificielle}
+  \begin{block}{Intelligence artificielle (d\'eclar\'ee)}
     \begin{itemize}
-      \item \textbf{Claude Code} (Anthropic) --- assistance architecture, tests, documentation
+      \item \textbf{Claude Code} (Anthropic) --- \texttt{volume\_control.py}, \texttt{zoom\_control.py}
+      \item \textbf{GitHub Copilot} --- refactorisation l\'eg\`ere de \texttt{main.py}
     \end{itemize}
   \end{block}
 \end{frame}

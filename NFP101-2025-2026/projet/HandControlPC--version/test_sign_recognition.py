@@ -4,15 +4,16 @@ import threading
 from utils.hand_tracking import HandDetector
 
 # Patterns: [pouce, index, majeur, annulaire, auriculaire]
+# Choix basés sur des gestes anatomiquement faciles et bien distincts
 SIGNS = {
-    "A": [1, 0, 0, 0, 0],   # Poing, pouce sur le côté
+    "A": [1, 0, 0, 0, 0],   # Pouce seul sur le côté (poing fermé)
     "B": [0, 1, 1, 1, 1],   # 4 doigts levés, pouce replié
-    "J": [0, 0, 0, 0, 1],   # Auriculaire seul (crochet)
-    "L": [1, 1, 0, 0, 0],   # Index + pouce (pistolet)
-    "N": [1, 0, 1, 0, 0],   # Pouce + majeur
-    "O": [1, 0, 0, 0, 1],   # Pouce + auriculaire (forme arrondie)
+    "J": [1, 0, 0, 0, 1],   # Pouce + auriculaire (signe "shaka")
+    "L": [1, 1, 0, 0, 0],   # Pouce + index (pistolet)
+    "N": [1, 1, 1, 0, 0],   # Pouce + index + majeur
+    "O": [0, 1, 1, 1, 0],   # Index + majeur + annulaire (3 doigts du milieu)
     "R": [0, 1, 0, 0, 0],   # Index seul pointé
-    "U": [0, 1, 1, 0, 0],   # Index + majeur (deux doigts côte à côte)
+    "U": [0, 1, 1, 0, 0],   # Index + majeur (signe V / paix)
 }
 
 BONJOUR_SEQUENCE = list("BONJOUR")

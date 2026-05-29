@@ -29,15 +29,15 @@ def test_recognize_sign_L():
 
 
 def test_recognize_sign_O():
-    assert recognize_sign([1, 0, 0, 0, 1]) == "O"
+    assert recognize_sign([0, 1, 1, 1, 0]) == "O"
 
 
 def test_recognize_sign_N():
-    assert recognize_sign([1, 0, 1, 0, 0]) == "N"
+    assert recognize_sign([1, 1, 1, 0, 0]) == "N"
 
 
 def test_recognize_sign_J():
-    assert recognize_sign([0, 0, 0, 0, 1]) == "J"
+    assert recognize_sign([1, 0, 0, 0, 1]) == "J"
 
 
 def test_recognize_sign_U():

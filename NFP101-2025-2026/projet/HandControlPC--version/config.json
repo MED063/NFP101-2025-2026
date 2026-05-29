@@ -1,0 +1,29 @@
+{
+  "camera": {
+    "width": 1280,
+    "height": 720,
+    "index": 0
+  },
+  "detection": {
+    "min_detection_confidence": 0.7,
+    "min_tracking_confidence": 0.5,
+    "screenshot_confidence": 0.35,
+    "gesture_history_length": 15,
+    "cooldown_frames": 15
+  },
+  "volume": {
+    "min": 0,
+    "max": 100,
+    "distance_min": 50,
+    "distance_max": 300
+  },
+  "screenshot": {
+    "folder": "screenshots",
+    "cooldown": 30,
+    "stable_threshold": 0.6
+  },
+  "zoom": {
+    "min_scale": 0.5,
+    "max_scale": 3.0
+  }
+}

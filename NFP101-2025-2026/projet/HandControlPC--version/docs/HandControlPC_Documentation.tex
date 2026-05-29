@@ -1,0 +1,734 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Encodage et langue ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+% --- Police Times ---
+\usepackage{mathptmx}
+
+% --- Mise en page ---
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% --- Graphiques et tableaux ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds}
+\usepackage{xurl}
+
+% --- Maths et symboles ---
+\usepackage{amsmath, amssymb}
+
+% --- Liens ---
+\usepackage[colorlinks=true, linkcolor=blue!60!black, citecolor=blue!60!black, urlcolor=blue!60!black]{hyperref}
+
+% --- En-têtes ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textit{Projet NFP101 -- 2025/2026}}
+\lhead{\textit{HandControlPC}}
+\cfoot{\thepage}
+
+% --- Légendes figures ---
+\usepackage[font=small,labelfont=bf,textfont=it]{caption}
+
+% --- Couleurs + boîtes ---
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+\definecolor{steelblue}{RGB}{70,130,180}
+\definecolor{darkblue}{RGB}{25,60,120}
+
+\pgfplotsset{
+    rapportaxis/.style={
+        tick label style={font=\small},
+        label style={font=\small},
+        title style={font=\small},
+        grid=major,
+        grid style={dashed, gray!30},
+        scaled ticks=false,
+    }
+}
+
+\newtcolorbox{descrbox}[1][]{%
+  enhanced,
+  colback=blue!3,
+  colframe=blue!40!black,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fontupper=\small,
+  fonttitle=\small\bfseries\sffamily,
+  title={\raisebox{-0.2ex}{\textsf{$\triangleright$}}~Point cl\'e},
+  attach boxed title to top left={yshift=-2mm, xshift=4mm},
+  boxed title style={colback=blue!40!black, colframe=blue!40!black, arc=2pt, boxrule=0pt},
+  #1
+}
+
+\newtcolorbox{iabox}[1][]{%
+  enhanced,
+  colback=orange!5,
+  colframe=orange!60!black,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fontupper=\small,
+  fonttitle=\small\bfseries\sffamily,
+  title={\raisebox{-0.2ex}{\textsf{$\triangleright$}}~Utilisation IA},
+  attach boxed title to top left={yshift=-2mm, xshift=4mm},
+  boxed title style={colback=orange!60!black, colframe=orange!60!black, arc=2pt, boxrule=0pt},
+  #1
+}
+
+% --- Enumération compacte ---
+\usepackage{enumitem}
+\setlist[enumerate]{topsep=2pt, itemsep=1pt, parsep=0pt}
+\setlist[itemize]{topsep=2pt, itemsep=1pt, parsep=0pt}
+
+% --- Listings code ---
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{gray!8},
+  frame=single,
+  rulecolor=\color{gray!40},
+  breaklines=true,
+  showstringspaces=false,
+  commentstyle=\color{gray},
+  keywordstyle=\color{blue!70!black}\bfseries,
+  stringstyle=\color{green!50!black},
+  language=Python,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  xleftmargin=1.5em,
+  framexleftmargin=1.5em,
+}
+
+% ============================================================
+\begin{document}
+
+% ============================================================
+% PAGE DE TITRE
+% ============================================================
+\begin{titlepage}
+\centering
+\vspace*{1cm}
+{\Large Conservatoire National des Arts et M\'etiers}\\[0.3cm]
+{\large NFP101 --- Programmation Orient\'ee Objet}\\[3cm]
+
+\rule{0.8\textwidth}{1.5pt}\\[0.6cm]
+{\LARGE \textbf{HandControlPC}}\\[0.4cm]
+{\Large Contr\^ole gestuel du PC par webcam}\\[0.2cm]
+\rule{0.8\textwidth}{1.5pt}\\[2.5cm]
+
+{\large Auteur : \textbf{Mohamed Amine Sobhi}}\\[0.4cm]
+{\large Professeur : \textbf{Adrien Escourrou}}\\[2cm]
+
+{\large Langage : \textbf{Python 3.11}}\\[0.3cm]
+{\large Ann\'ee universitaire 2025--2026}\\[1.5cm]
+
+\vfill
+{\large Mai 2026}
+\end{titlepage}
+
+% ============================================================
+\newpage
+\tableofcontents
+\newpage
+
+% ============================================================
+% RESUME
+% ============================================================
+\section*{R\'esum\'e}
+\addcontentsline{toc}{section}{R\'esum\'e}
+
+\noindent HandControlPC est une application Python de contr\^ole gestuel du PC par webcam.
+Elle utilise MediaPipe pour d\'etecter 21 landmarks de la main en temps r\'eel et traduit
+les gestes en actions syst\`eme macOS~: r\'eglage du volume, capture d'\'ecran, zoom vid\'eo,
+et reconnaissance de signes (\'epeler \textbf{BONJOUR} lettre par lettre).
+
+Le projet est structur\'e autour d'une hi\'erarchie de classes Python avec h\'eritage et polymorphisme,
+une configuration externe JSON, 29 tests unitaires automatisables sans webcam,
+et une documentation compl\`ete.
+
+\vspace{0.3cm}
+\noindent\textbf{Mots-cl\'es~:} Python, OpenCV, MediaPipe, programmation orient\'ee objet,
+vision par ordinateur, interface gestuelle, tests unitaires.
+
+\newpage
+
+% ============================================================
+% 1. CONTEXTE ET BESOIN
+% ============================================================
+\section{Contexte et besoin}
+\label{sec:contexte}
+
+\subsection{Probl\'ematique}
+
+Les interfaces homme-machine traditionnelles (clavier, souris) imposent un contact physique
+permanent avec le mat\'eriel. Certains sc\'enarios b\'en\'eficient d'une interaction sans contact~:
+pr\'esentation en public, accessibilit\'e, environnements o\`u les mains sont occup\'ees.
+
+HandControlPC propose une solution~: d\'etecter les gestes de la main via la webcam int\'egr\'ee
+du PC et les convertir en actions syst\`eme, sans mat\'eriel suppl\'ementaire.
+
+\subsection{Public cible}
+
+\begin{itemize}
+  \item Utilisateurs souhaitant contr\^oler le volume ou faire des captures sans quitter leur
+        activit\'e principale.
+  \item Personnes en situation de handicap moteur des membres sup\'erieurs (contr\^ole partiel).
+  \item D\'eveloppeurs int\'eress\'es par la vision par ordinateur et les interfaces gestuelles.
+\end{itemize}
+
+\subsection{Cas d'usage principaux}
+
+\begin{table}[H]
+\centering
+\caption{Fonctionnalit\'es principales et gestes associ\'es.}
+\label{tab:usecases}
+\small
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.5cm} X p{4cm}}
+\toprule
+\textbf{Geste} & \textbf{Action syst\`eme} & \textbf{Retour au menu} \\
+\midrule
+Index seul lev\'e & Mode Volume~: pincement pouce-index ajuste le volume (0--100\,\%) & Main compl\`etement ouverte \\
+\midrule
+3 doigts lev\'es & Mode Screenshot~: maintenir le geste $\sim$0,7\,s d\'eclenche une capture & Automatique apr\`es capture \\
+\midrule
+2 mains visibles & Mode Zoom~: \'ecartement/rapprochement des index zoome le flux vid\'eo & Une seule main restante \\
+\midrule
+S\'equence B-O-N-J-O-U-R & Reconnaissance de signes~: \'epeler BONJOUR lettre par lettre & Touche \texttt{R} / automatique \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\newpage
+
+% ============================================================
+% 2. ARCHITECTURE ET CHOIX TECHNIQUES
+% ============================================================
+\section{Architecture et choix techniques}
+\label{sec:architecture}
+
+\subsection{Structure des fichiers}
+
+\begin{table}[H]
+\centering
+\caption{Organisation des modules du projet.}
+\label{tab:modules}
+\small
+\begin{tabularx}{\textwidth}{>{\ttfamily}p{5.5cm} X}
+\toprule
+\textbf{Fichier} & \textbf{R\^ole} \\
+\midrule
+main.py & Point d'entr\'ee --- boucle principale, gestion des modes \\
+test\_sign\_recognition.py & D\'emo reconnaissance de signes et s\'equence BONJOUR \\
+config.json & Configuration externe (cam\'era, seuils, dossiers) \\
+requirements.txt & D\'ependances Python \\
+\midrule
+utils/gesture\_action.py & Classe abstraite \texttt{GestureAction} (ABC) \\
+utils/hand\_tracking.py & \texttt{HandDetector} --- d\'etection MediaPipe \\
+utils/volume\_control.py & \texttt{VolumeController} --- h\'erite de \texttt{GestureAction} \\
+utils/screenshot.py & \texttt{ScreenshotTaker} --- h\'erite de \texttt{GestureAction} \\
+utils/zoom\_control.py & \texttt{ZoomManager} --- h\'erite de \texttt{GestureAction} \\
+utils/config\_loader.py & Chargement JSON avec deepcopy et fallback \\
+\midrule
+tests/test\_gesture\_logic.py & 19 tests logique gestuelle \\
+tests/test\_config.py & 7 tests configuration \\
+tests/test\_screenshot.py & 3 tests h\'eritage et dossiers \\
+\midrule
+docs/ & Documentation PDF et LaTeX \\
+screenshots/ & Captures d'\'ecran g\'en\'er\'ees \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Hi\'erarchie de classes et polymorphisme}
+
+Le projet repose sur une classe abstraite \texttt{GestureAction} dont h\'eritent les trois
+actions gestuelles. Cette conception respecte le principe \textbf{Open/Closed}~: ajouter
+une nouvelle action ne n\'ecessite que de cr\'eer une nouvelle sous-classe.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=1.4cm and 2.2cm,
+  classbox/.style={
+    rectangle, draw=darkblue, fill=blue!6,
+    rounded corners=3pt, minimum width=3.8cm, minimum height=1cm,
+    align=center, font=\small\ttfamily
+  },
+  abstract/.style={
+    classbox, fill=steelblue!20, draw=steelblue,
+    font=\small\ttfamily\bfseries
+  },
+  arrow/.style={-{Latex[length=3mm]}, thick, draw=darkblue}
+]
+
+\node[abstract] (ga) {GestureAction\\{\tiny\normalfont (ABC)}};
+
+\node[classbox, below left=of ga]  (vc) {VolumeController};
+\node[classbox, below=of ga]       (st) {ScreenshotTaker};
+\node[classbox, below right=of ga] (zm) {ZoomManager};
+
+\draw[arrow] (vc) -- (ga);
+\draw[arrow] (st) -- (ga);
+\draw[arrow] (zm) -- (ga);
+
+% Méthodes GestureAction
+\node[right=3.5cm of ga, align=left, font=\small] (methods) {
+  \textit{M\'ethodes abstraites~:}\\
+  \quad \texttt{+ process(img, hands)}\\[4pt]
+  \textit{M\'ethodes concr\`etes~:}\\
+  \quad \texttt{+ activate()}\\
+  \quad \texttt{+ deactivate()}\\
+  \quad \texttt{+ render\_hud(img, text)}
+};
+\draw[dashed, gray] (ga.east) -- (methods.west);
+
+\end{tikzpicture}
+\caption{Hi\'erarchie d'h\'eritage~: \texttt{GestureAction} est la classe abstraite commune.
+Chaque sous-classe impl\'emente \texttt{process()} selon sa logique propre (polymorphisme).}
+\label{fig:hierarchy}
+\end{figure}
+
+\begin{descrbox}
+Le \textbf{polymorphisme} est exploit\'e dans \texttt{main.py}~: la boucle principale peut
+th\'eoriquement appeler \texttt{action.process(img, hands\_data)} sans conna\^itre le type
+concret de l'action. La m\'ethode \texttt{render\_hud()} partag\'ee affiche automatiquement
+le nom du mode actif en overlay sur le flux vid\'eo.
+\end{descrbox}
+
+\subsection{Pipeline de traitement vid\'eo}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=0.4cm,
+  step/.style={rectangle, draw=darkblue, fill=blue!6, rounded corners=3pt,
+               minimum width=2.8cm, minimum height=0.8cm, align=center, font=\small},
+  arrow/.style={-{Latex[length=2.5mm]}, thick, draw=darkblue}
+]
+\node[step] (cam)   {Webcam\\(OpenCV)};
+\node[step, right=of cam]  (mp)    {D\'etection\\(MediaPipe)};
+\node[step, right=of mp]   (lm)    {21 landmarks\\$(x,y)$};
+\node[step, right=of lm]   (fp)    {\texttt{fingers\_up()}};
+\node[step, right=of fp]   (mode)  {Mode actif};
+\node[step, right=of mode] (sys)   {Action\\syst\`eme};
+
+\draw[arrow] (cam)  -- (mp);
+\draw[arrow] (mp)   -- (lm);
+\draw[arrow] (lm)   -- (fp);
+\draw[arrow] (fp)   -- (mode);
+\draw[arrow] (mode) -- (sys);
+\end{tikzpicture}
+\caption{Pipeline de traitement~: chaque frame passe de la webcam \`a une action syst\`eme
+en moins de 33\,ms (\textgreater\,30\,FPS).}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Syst\`eme de configuration}
+
+Tous les param\`etres sont externalis\'es dans \texttt{config.json}, charg\'e au
+d\'emarrage par \texttt{config\_loader.py}. Un \texttt{deepcopy} prot\`ege le dictionnaire
+par d\'efaut contre les modifications en place (bug corrig\'e lors du d\'eveloppement).
+
+\begin{lstlisting}[caption={Extrait de config.json}, label={lst:config}]
+{
+  "camera":    { "width": 1280, "height": 720, "index": 0 },
+  "detection": { "min_detection_confidence": 0.7,
+                 "gesture_history_length": 15 },
+  "volume":    { "min": 0, "max": 100,
+                 "distance_min": 50, "distance_max": 300 },
+  "screenshot":{ "folder": "screenshots", "stable_threshold": 0.6 },
+  "zoom":      { "min_scale": 0.5, "max_scale": 3.0 }
+}
+\end{lstlisting}
+
+\subsection{Biblioth\`eques utilis\'ees}
+
+\begin{table}[H]
+\centering
+\caption{Biblioth\`eques et justification du choix.}
+\label{tab:libs}
+\small
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3cm} X}
+\toprule
+\textbf{Biblioth\`eque} & \textbf{R\^ole et justification} \\
+\midrule
+OpenCV & Capture webcam, traitement d'image, affichage HUD en temps r\'eel. Standard industriel,
+        tr\`es performant sur macOS. \\
+MediaPipe & D\'etection de 21 landmarks de la main par r\'eseau de neurones (Google).
+           Fonctionne sur CPU standard, 30+ FPS. \\
+NumPy & Interpolation lin\'eaire (\texttt{np.interp} pour le volume), clipping du zoom
+       (\texttt{np.clip}). \\
+MSS & Capture d'\'ecran multi-plateforme, plus rapide que PyAutoGUI pour ce cas. \\
+osascript & API macOS native pour le contr\^ole du volume et le retour sonore. \\
+pytest & Framework de tests unitaires~: 29 tests automatisables sans webcam. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\newpage
+
+% ============================================================
+% 3. FONCTIONNALITES DETAILLEES
+% ============================================================
+\section{Fonctionnalit\'es d\'etaill\'ees}
+\label{sec:fonctionnalites}
+
+\subsection{Mode Volume}
+
+Le volume est r\'egl\'e proportionnellement \`a la distance entre le pouce (landmark~4)
+et l'index (landmark~8)~:
+
+\begin{equation}
+  V = \left\lfloor \text{interp}\!\left(d_{\text{pouce-index}},\;
+      [d_{\min},\, d_{\max}],\; [0,\, 100]\right) \right\rfloor
+  \label{eq:volume}
+\end{equation}
+
+avec $d_{\min} = 50$ px et $d_{\max} = 300$ px (param\'etrables dans \texttt{config.json}).
+L'appel syst\`eme \texttt{osascript} applique le volume~; une ligne verte relie les deux
+doigts comme retour visuel. \textbf{Retour au menu~:} main compl\`etement ouverte (5 doigts).
+
+\subsection{Mode Screenshot}
+
+Un historique glissant de \texttt{GESTURE\_HISTORY\_LENGTH} frames est maintenu.
+La capture n'est d\'eclench\'ee que si le taux de frames avec 3 doigts lev\'es
+d\'epasse le seuil \texttt{stable\_threshold}~=~0,6~:
+
+\begin{equation}
+  \text{confiance} = \frac{\sum_{i=1}^{N} \mathbf{1}[\text{geste valide}_i]}{N}
+  \geq 0{,}6
+  \label{eq:confidence}
+\end{equation}
+
+Ce m\'ecanisme \'evite les faux positifs lors des transitions. Un son de confirmation
+(\texttt{afplay}) et un message \texttt{CAPTURE REUSSIE!} confirment visuellement l'action.
+
+\subsection{Mode Zoom}
+
+Le facteur de zoom est calcul\'e \`a partir de la variation de distance entre les index
+des deux mains~:
+
+\begin{equation}
+  \text{scale} = \text{clip}\!\left(\frac{d_\text{actuelle}}{d_\text{initiale}},\;
+      s_{\min},\, s_{\max}\right)
+  \label{eq:zoom}
+\end{equation}
+
+Une transformation affine \texttt{cv2.warpAffine} applique le zoom centr\'e sur le
+milieu des deux mains.
+
+\subsection{Reconnaissance de signes --- S\'equence BONJOUR}
+
+\begin{table}[H]
+\centering
+\caption{Patterns de doigts pour les 8 signes reconnus~:
+[pouce, index, majeur, annulaire, auriculaire].}
+\label{tab:signs}
+\small
+\begin{tabular}{clp{6cm}}
+\toprule
+\textbf{Lettre} & \textbf{Pattern binaire} & \textbf{Geste physique} \\
+\midrule
+A & \texttt{[1, 0, 0, 0, 0]} & Poing ferm\'e, pouce sur le c\^ot\'e \\
+B & \texttt{[0, 1, 1, 1, 1]} & 4 doigts lev\'es, pouce repli\'e \\
+J & \texttt{[1, 0, 0, 0, 1]} & Pouce + auriculaire (signe \textit{shaka}) \\
+L & \texttt{[1, 1, 0, 0, 0]} & Pouce + index (pistolet) \\
+N & \texttt{[1, 1, 1, 0, 0]} & Pouce + index + majeur \\
+O & \texttt{[0, 1, 1, 1, 0]} & Index + majeur + annulaire (3 doigts du milieu) \\
+R & \texttt{[0, 1, 0, 0, 0]} & Index seul point\'e \\
+U & \texttt{[0, 1, 1, 0, 0]} & Index + majeur (signe V / paix) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Le programme attend que l'utilisateur \'epelle \textbf{B\,--\,O\,--\,N\,--\,J\,--\,O\,--\,U\,--\,R}
+dans l'ordre. Chaque lettre valide apr\`es \texttt{HOLD\_FRAMES}~=~20 frames stables.
+Une erreur de s\'equence remet le compteur \`a z\'ero. Quand la s\'equence est compl\`ete,
+le programme \'emet vocalement \og{}Bonjour\fg{} et affiche un message de succ\`es.
+
+\begin{descrbox}
+Le choix des patterns a \'et\'e it\'eratif~: les premiers patterns (auriculaire seul,
+pouce+majeur sans index) \'etaient anatomiquement difficiles \`a tenir et peu fiables.
+Les patterns actuels ont \'et\'e s\'electionn\'es pour \^etre \textbf{distincts} entre eux
+et \textbf{naturels} \`a ex\'ecuter, permettant une d\'etection stable.
+\end{descrbox}
+
+\newpage
+
+% ============================================================
+% 4. TESTS UNITAIRES
+% ============================================================
+\section{Validation et tests}
+\label{sec:tests}
+
+\subsection{Strat\'egie de test}
+
+Tous les tests sont con\c{c}us pour s'ex\'ecuter \textbf{sans webcam, sans mat\'eriel, sans appel
+syst\`eme r\'eel}. Les d\'ependances externes (MediaPipe, MSS, osascript) sont soit
+mock\'ees avec \texttt{unittest.mock}, soit contournables par injection de donn\'ees.
+
+\subsection{Couverture}
+
+\begin{table}[H]
+\centering
+\caption{29 tests unitaires r\'epartis en 3 fichiers.}
+\label{tab:tests}
+\small
+\begin{tabularx}{\textwidth}{>{\ttfamily}p{5cm} c X}
+\toprule
+\textbf{Fichier} & \textbf{Tests} & \textbf{Ce qui est test\'e} \\
+\midrule
+test\_gesture\_logic.py & 19 & Reconnaissance de signes A, B, J, L, N, O, R, U~;
+                               s\'equence BONJOUR~; calcul de volume~;
+                               ZoomManager (reset, clipping)~; fingers\_up \\
+test\_config.py         &  7 & Chargement JSON valide, JSON invalide, fichier manquant,
+                               d\'efauts, deepcopy, cl\'es pr\'esentes \\
+test\_screenshot.py     &  3 & Cr\'eation dossier, h\'eritage GestureAction, mock MSS \\
+\midrule
+\textbf{Total}          & \textbf{29} & \textbf{100\,\% passent sans webcam} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    rapportaxis,
+    ybar,
+    width=10cm, height=5.5cm,
+    symbolic x coords={test\_gesture\_logic, test\_config, test\_screenshot},
+    xtick=data,
+    xticklabel style={font=\small, rotate=10},
+    ylabel={Nombre de tests},
+    title={R\'epartition des tests par fichier (29 tests --- 100\,\% PASSED)},
+    nodes near coords,
+    nodes near coords align={vertical},
+    every node near coord/.append style={font=\small, yshift=2pt},
+    ymin=0, ymax=25,
+    bar width=1.5cm,
+    fill=steelblue!60,
+    draw=steelblue!80,
+]
+\addplot coordinates {
+    (test\_gesture\_logic, 19)
+    (test\_config, 7)
+    (test\_screenshot, 3)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{29 tests unitaires r\'epartis en 3 modules. Ex\'ecution~: \texttt{python -m pytest tests/ -v}.}
+\label{fig:tests}
+\end{figure}
+
+\subsection{Exemple de test unitaire}
+
+\begin{lstlisting}[caption={Test de la reconnaissance de signe et de la s\'equence BONJOUR.},
+                   label={lst:test}]
+def test_recognize_sign_B():
+    assert recognize_sign([0, 1, 1, 1, 1]) == "B"
+
+def test_bonjour_sequence_is_correct():
+    from test_sign_recognition import BONJOUR_SEQUENCE
+    assert BONJOUR_SEQUENCE == ["B", "O", "N", "J", "O", "U", "R"]
+
+def test_zoom_reset():
+    z = ZoomManager()
+    z.scale = 2.5
+    z.reset()
+    assert z.scale == 1.0
+    assert z.start_distance is None
+\end{lstlisting}
+
+\newpage
+
+% ============================================================
+% 5. UTILISATION DE L'IA
+% ============================================================
+\section{Utilisation de l'intelligence artificielle}
+\label{sec:ia}
+
+\begin{iabox}
+L'IA utilis\'ee est \textbf{Claude Code} (Anthropic, mod\`ele \textit{claude-sonnet-4-6}).
+Tout code g\'en\'er\'e ou assist\'e par IA est encadr\'e dans le source~:
+\lstinline|# ############### CODE IA (Claude) ################|
+\end{iabox}
+
+\vspace{0.4cm}
+
+\begin{table}[H]
+\centering
+\caption{D\'etail des usages de l'IA dans le projet.}
+\label{tab:ia}
+\small
+\begin{tabularx}{\textwidth}{p{4cm} p{5cm} X}
+\toprule
+\textbf{Ce qui a \'et\'e fait avec l'IA} & \textbf{Prompt / demande} & \textbf{Ce que j'ai compris / modifi\'e} \\
+\midrule
+Classe abstraite \texttt{GestureAction} &
+``Cr\'ee une classe de base ABC pour des actions gestuelles avec \texttt{process()} abstraite
+et \texttt{render\_hud()} commune'' &
+V\'erifi\'e la compatibilit\'e avec les sous-classes, adapt\'e les signatures \\
+\midrule
+Refactorisation h\'eritage &
+``Fais h\'eriter \texttt{VolumeController}, \texttt{ScreenshotTaker}, \texttt{ZoomManager}
+de \texttt{GestureAction}'' &
+Valid\'e que la logique m\'etier (pincement, capture, zoom) reste inchang\'ee \\
+\midrule
+\texttt{config\_loader.py} &
+``Cr\'ee un loader JSON avec deepcopy et fallback sur valeurs par d\'efaut'' &
+Identifi\'e et corrig\'e le bug de \textit{shallow copy}~: \texttt{.copy()} ne suffit pas
+pour les dicts imbriqu\'es \\
+\midrule
+29 tests unitaires &
+``G\'en\`ere des tests sans webcam pour \texttt{fingers\_up}, \texttt{recognize\_sign},
+\texttt{ZoomManager}, config'' &
+Ajout\'e les tests sur la s\'equence BONJOUR et les patterns it\'eratifs \\
+\midrule
+Documentation LaTeX &
+``G\'en\`ere le fichier \texttt{.tex} de documentation dans le style du template'' &
+R\'edig\'e tout le contenu (contexte, analyse, limites), adapt\'e les figures TikZ \\
+\midrule
+Correction bug \texttt{HandDetector} &
+(d\'etection d'erreur) &
+Compris pourquoi \texttt{\_\_init\_\_} ne passait pas les param\`etres \`a MediaPipe \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\vspace{0.3cm}
+\noindent\textbf{Taux d'utilisation estim\'e~:} $\approx$\,40\,\% (architecture POO, tests, documentation).
+La logique de d\'etection gestuelle, la boucle de modes, l'int\'egration MediaPipe/OpenCV
+et les patterns de signes (dont la correction it\'erative) ont \'et\'e \'ecrits et ma\^itris\'es
+par l'auteur.
+
+\newpage
+
+% ============================================================
+% 6. INSTALLATION ET LANCEMENT
+% ============================================================
+\section{Installation et lancement}
+\label{sec:install}
+
+\subsection{Pr\'erequis}
+
+\begin{itemize}
+  \item Python 3.11+ (test\'e sur macOS 14 Sonoma)
+  \item Webcam fonctionnelle
+  \item Permissions macOS~: \textit{Accessibilit\'e} (PyAutoGUI) et
+        \textit{Enregistrement d'\'ecran} (MSS) dans
+        \texttt{R\'eglages syst\`eme > Confidentialit\'e et s\'ecurit\'e}
+\end{itemize}
+
+\subsection{Installation}
+
+\begin{lstlisting}[language=bash, caption={Installation des d\'ependances.}]
+# Depuis le dossier HandControlPC--version/
+source ../.venv/bin/activate
+pip install -r requirements.txt
+\end{lstlisting}
+
+\subsection{Lancement}
+
+\begin{lstlisting}[language=bash, caption={Commandes de lancement.}]
+# Controle gestuel principal (volume, screenshot, zoom)
+python main.py
+
+# Reconnaissance de signes / sequence BONJOUR
+python test_sign_recognition.py
+
+# Tests unitaires
+python -m pytest tests/ -v
+\end{lstlisting}
+
+\subsection{Touches clavier}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Touche} & \textbf{Action} \\
+\midrule
+\texttt{ESC} & Quitter le programme \\
+\texttt{R} & R\'einitialiser la s\'equence BONJOUR \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ============================================================
+% 7. LIMITES ET PERSPECTIVES
+% ============================================================
+\section{Limites et perspectives}
+\label{sec:limites}
+
+\subsection{Limites actuelles}
+
+\begin{itemize}
+  \item \textbf{macOS uniquement}~: \texttt{osascript} (volume) et \texttt{afplay} (son)
+        sont sp\'ecifiques \`a macOS. Un portage Windows/Linux n\'ecessiterait des
+        alternatives (\texttt{pycaw}, \texttt{pactl}).
+  \item \textbf{Luminosit\'e}~: les performances de MediaPipe se d\'egradent en faible
+        \'eclairage ou avec des arri\`ere-plans complexes.
+  \item \textbf{Signes statiques uniquement}~: les gestes dynamiques (J en LSF est normalement
+        un mouvement) ne sont pas support\'es --- on utilise une approximation statique.
+  \item \textbf{Mono-utilisateur}~: le syst\`eme ne g\`ere qu'une seule s\'equence BONJOUR
+        \`a la fois, sans profil utili\-sateur.
+\end{itemize}
+
+\subsection{Pistes d'am\'elioration}
+
+\begin{itemize}
+  \item Ajout du d\'eplacement de la souris par geste (index pointant vers l'\'ecran).
+  \item Support Windows/Linux via des APIs cross-platform.
+  \item Mode apprentissage~: enregistrer de nouveaux patterns de gestes sans modifier le code.
+  \item Interface de configuration graphique (tkinter).
+  \item Syst\`eme de logs persistants dans un fichier (module \texttt{logging}).
+  \item D\'etection de gestes dynamiques avec une fen\^etre temporelle sur les landmarks.
+\end{itemize}
+
+\newpage
+
+% ============================================================
+% REFERENCES
+% ============================================================
+\section*{R\'ef\'erences}
+\addcontentsline{toc}{section}{R\'ef\'erences}
+
+\begin{description}
+  \item[MediaPipe (2023)] Google. \textit{MediaPipe Hands~: On-device Real-time Hand Tracking}.\\
+    \url{https://mediapipe.readthedocs.io/en/latest/solutions/hands.html}
+
+  \item[OpenCV (2024)] OpenCV Team. \textit{OpenCV --- Open Source Computer Vision Library}.\\
+    \url{https://opencv.org/}
+
+  \item[Python ABC] Python Software Foundation.
+    \textit{Module \texttt{abc} --- Abstract Base Classes}.\\
+    \url{https://docs.python.org/3/library/abc.html}
+
+  \item[pytest (2024)] \textit{pytest --- helps you write better programs}.\\
+    \url{https://docs.pytest.org/}
+
+  \item[MSS (2024)] \textit{MSS --- An ultra fast cross-platform multiple screenshots module}.\\
+    \url{https://python-mss.readthedocs.io/}
+\end{description}
+
+\end{document}

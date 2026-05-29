@@ -1,0 +1,461 @@
+\documentclass[aspectratio=169,12pt]{beamer}
+
+% ============================================================
+% PRESENTATION ORALE - HandControlPC
+% Structure conforme a l'enonce NFP101 (section 5 : support oral)
+% Compilation : tectonic HandControlPC_Presentation.tex
+% Conversion PPT : ouvrir le PDF dans PowerPoint/Keynote ou via un convertisseur
+% ============================================================
+
+% --- Encodage et langue ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+% --- Theme ---
+\usetheme{Madrid}
+\usecolortheme{whale}
+\useinnertheme{circles}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+% --- Couleurs personnalisees ---
+\usepackage{xcolor}
+\definecolor{cnamblue}{RGB}{25,60,120}
+\definecolor{steelblue}{RGB}{70,130,180}
+\definecolor{accent}{RGB}{200,100,20}
+\setbeamercolor{structure}{fg=cnamblue}
+\setbeamercolor{frametitle}{bg=cnamblue,fg=white}
+\setbeamercolor{title}{fg=white}
+
+% --- Packages ---
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\usepackage{listings}
+\usepackage{amsmath}
+
+% --- Style code ---
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  backgroundcolor=\color{gray!10},
+  frame=single,
+  rulecolor=\color{gray!40},
+  breaklines=true,
+  showstringspaces=false,
+  commentstyle=\color{gray},
+  keywordstyle=\color{cnamblue}\bfseries,
+  stringstyle=\color{green!50!black},
+  language=Python,
+}
+
+% --- Barre de progression simple en pied de page (deja dans Madrid) ---
+
+% --- Infos titre ---
+\title[HandControlPC]{HandControlPC}
+\subtitle{Contr\^ole gestuel du PC par webcam}
+\author[M.A. Sobhi]{Mohamed Amine Sobhi}
+\institute[Cnam]{Cnam Occitanie --- NFP101 Programmation Orient\'ee Objet\\Professeur~: Adrien Escourrou}
+\date{Mai 2026}
+
+% ============================================================
+\begin{document}
+
+% --- DIAPO TITRE ---
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% --- SOMMAIRE ---
+\begin{frame}{Plan de la pr\'esentation}
+  \tableofcontents
+\end{frame}
+
+% ============================================================
+\section{Introduction, contexte et objectif}
+% ============================================================
+
+\begin{frame}{Contexte~: pourquoi HandControlPC~?}
+  \begin{columns}
+    \begin{column}{0.58\textwidth}
+      \textbf{Le constat}
+      \begin{itemize}
+        \item Clavier et souris imposent un contact physique permanent.
+        \item Certains contextes y sont mal adapt\'es~: pr\'esentation, accessibilit\'e, mains occup\'ees.
+      \end{itemize}
+      \vspace{0.4cm}
+      \textbf{L'id\'ee}
+      \begin{itemize}
+        \item Utiliser la \textbf{webcam} d\'ej\`a pr\'esente sur chaque PC.
+        \item Traduire des \textbf{gestes de la main} en actions syst\`eme.
+        \item Aucun mat\'eriel suppl\'ementaire.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{block}{Public cible}
+        \begin{itemize}
+          \item Utilisateurs en pr\'esentation
+          \item Accessibilit\'e (handicap moteur)
+          \item Curieux de la vision par ordinateur
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Objectif du projet}
+  \begin{block}{Fonctionnalit\'e centrale}
+    Capter les gestes de la main en temps r\'eel et les convertir en actions concr\`etes~:
+    \textbf{volume}, \textbf{capture d'\'ecran}, \textbf{zoom}, et \textbf{reconnaissance de signes}.
+  \end{block}
+  \vspace{0.3cm}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \textbf{Objectifs techniques}
+      \begin{itemize}
+        \item Application \emph{enti\`erement finie} (pas un prototype)
+        \item Architecture orient\'ee objet propre
+        \item Configuration externe
+        \item Tests automatis\'es
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{Contraintes}
+      \begin{itemize}
+        \item Temps r\'eel ($>$ 30 FPS)
+        \item Robustesse aux faux positifs
+        \item Code lisible et extensible
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+\section{Les \'etapes du projet}
+% ============================================================
+
+\begin{frame}{Les diverses \'etapes du projet}
+  \begin{center}
+  \begin{tikzpicture}[
+    node distance=0.35cm,
+    nbox/.style={rectangle, draw=cnamblue, fill=cnamblue!10, rounded corners=4pt,
+                 minimum width=2.5cm, minimum height=1.1cm, align=center, font=\small},
+    arrow/.style={-{Latex[length=3mm]}, very thick, draw=cnamblue}
+  ]
+    \node[nbox] (s1) {1. Prototype\\d\'etection main};
+    \node[nbox, right=of s1] (s2) {2. 3 modes\\(vol/screen/zoom)};
+    \node[nbox, right=of s2] (s3) {3. Refactor\\POO (h\'eritage)};
+    \node[nbox, right=of s3] (s4) {4. Config JSON\\+ tests};
+    \node[nbox, right=of s4] (s5) {5. Signes\\BONJOUR};
+    \draw[arrow] (s1)--(s2);
+    \draw[arrow] (s2)--(s3);
+    \draw[arrow] (s3)--(s4);
+    \draw[arrow] (s4)--(s5);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.5cm}
+  \begin{itemize}
+    \item D\'emarche \textbf{incr\'ementale}~: chaque \'etape ajoute une fonctionnalit\'e d\'emontrable.
+    \item Suivi par \textbf{commits Git r\'eguliers} (preuve d'avancement).
+    \item Refactorisation POO \emph{apr\`es} avoir valid\'e le fonctionnel.
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+\section{D\'emonstration et r\'esultat}
+% ============================================================
+
+\begin{frame}{D\'emonstration --- les 4 modes}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Modes de contr\^ole}
+        \begin{enumerate}
+          \item \textbf{Volume}~: pincement pouce-index
+          \item \textbf{Screenshot}~: 3 doigts maintenus
+          \item \textbf{Zoom}~: \'ecartement de 2 mains
+          \item \textbf{Signes}~: \'epeler BONJOUR
+        \end{enumerate}
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{R\'esultats observables}
+        \begin{itemize}
+          \item Volume syst\`eme modifi\'e en direct
+          \item Fichier PNG horodat\'e + son
+          \item Flux vid\'eo zoom\'e en temps r\'eel
+          \item Synth\`ese vocale \og Bonjour \fg
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{center}
+    \fbox{\parbox{0.85\textwidth}{\centering
+      \textbf{[ D\'emonstration en direct --- $\sim$3 minutes ]}\\
+      \small Lancer \texttt{python main.py} puis \texttt{python test\_sign\_recognition.py}
+    }}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Le geste \og BONJOUR \fg{} en pratique}
+  \begin{center}
+  \small
+  \begin{tabular}{cccccccc}
+    \textbf{B} & \textbf{O} & \textbf{N} & \textbf{J} & \textbf{O} & \textbf{U} & \textbf{R} \\
+    \midrule
+    4 doigts & 3 du milieu & pouce+2 & shaka & 3 du milieu & V & index \\
+  \end{tabular}
+  \end{center}
+  \vspace{0.4cm}
+  \begin{itemize}
+    \item Chaque lettre valide apr\`es \textbf{20 frames stables} ($\sim$0,7\,s).
+    \item Affichage progressif~: \textcolor{green!60!black}{vert} = valid\'e, \textcolor{orange}{jaune} = attendu, gris = \`a venir.
+    \item Une erreur de s\'equence remet le compteur \`a z\'ero.
+    \item S\'equence compl\`ete $\rightarrow$ synth\`ese vocale + message de succ\`es.
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+\section{Architecture technique}
+% ============================================================
+
+\begin{frame}{Architecture~: h\'eritage et polymorphisme}
+  \begin{columns}
+    \begin{column}{0.52\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[
+        node distance=0.7cm and 0.4cm,
+        cbox/.style={rectangle, draw=cnamblue, fill=cnamblue!8, rounded corners=3pt,
+                     minimum width=2.6cm, minimum height=0.75cm, align=center, font=\scriptsize\ttfamily},
+        abox/.style={cbox, fill=steelblue!25, draw=steelblue, font=\scriptsize\ttfamily\bfseries},
+        ar/.style={-{Latex[length=2.5mm]}, thick, draw=cnamblue}
+      ]
+        \node[abox] (ga) {GestureAction (ABC)};
+        \node[cbox, below=of ga] (st) {ScreenshotTaker};
+        \node[cbox, left=of st] (vc) {VolumeController};
+        \node[cbox, right=of st] (zm) {ZoomManager};
+        \draw[ar] (vc)--(ga);
+        \draw[ar] (st)--(ga);
+        \draw[ar] (zm)--(ga);
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Choix cl\'es}
+        \begin{itemize}
+          \item \texttt{process()} \textbf{abstraite} : chaque mode sa logique.
+          \item \texttt{render\_hud()} \textbf{h\'erit\'ee} : affichage commun.
+          \item Principe \textbf{Open/Closed} : ajouter un mode = une sous-classe.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.2cm}
+  \begin{exampleblock}{Polymorphisme}
+    \texttt{main.py} manipule les actions via l'interface commune \texttt{GestureAction}.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Pipeline temps r\'eel et stack technique}
+  \begin{center}
+  \begin{tikzpicture}[
+    node distance=0.3cm,
+    nbox/.style={rectangle, draw=cnamblue, fill=cnamblue!8, rounded corners=3pt,
+                 minimum width=1.9cm, minimum height=0.7cm, align=center, font=\scriptsize},
+    arrow/.style={-{Latex[length=2mm]}, thick, draw=cnamblue}
+  ]
+    \node[nbox] (cam)  {Webcam\\OpenCV};
+    \node[nbox, right=of cam] (mp)  {MediaPipe};
+    \node[nbox, right=of mp]  (lm)  {21 points};
+    \node[nbox, right=of lm]  (fp)  {fingers\_up};
+    \node[nbox, right=of fp]  (md)  {Mode actif};
+    \node[nbox, right=of md]  (sys) {Action OS};
+    \draw[arrow] (cam)--(mp); \draw[arrow] (mp)--(lm); \draw[arrow] (lm)--(fp);
+    \draw[arrow] (fp)--(md);  \draw[arrow] (md)--(sys);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.4cm}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Biblioth\`eques}
+        \begin{itemize}
+          \item \textbf{MediaPipe}~: 21 landmarks/main
+          \item \textbf{OpenCV}~: vid\'eo + HUD
+          \item \textbf{NumPy}~: interp / clip
+          \item \textbf{MSS}~: capture d'\'ecran
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Configuration externe}
+        \texttt{config.json} centralise tous les param\`etres~: r\'esolution,
+        seuils, dossiers. \\Chargement avec \texttt{deepcopy} + fallback.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+\section{Validation et tests}
+% ============================================================
+
+\begin{frame}{Validation, tests et robustesse}
+  \begin{columns}
+    \begin{column}{0.52\textwidth}
+      \begin{block}{29 tests unitaires (pytest)}
+        \begin{itemize}
+          \item \textbf{Sans webcam} : d\'ependances mock\'ees.
+          \item Signes, s\'equence BONJOUR, volume, zoom, config.
+          \item \texttt{python -m pytest tests/ -v}
+        \end{itemize}
+      \end{block}
+      \begin{exampleblock}{R\'esultat}
+        \textbf{29 passed} en $\sim$1,5\,s
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Robustesse \og en direct \fg}
+        \begin{itemize}
+          \item \textbf{Cooldown} entre actions
+          \item \textbf{Historique glissant} (anti faux positif)
+          \item Seuil de confiance $\geq 0{,}6$
+          \item \texttt{try/except} sur chaque frame
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+\section{Discussion, limites et IA}
+% ============================================================
+
+\begin{frame}{Discussion --- limites et axes d'am\'elioration}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Limites}
+        \begin{itemize}
+          \item macOS uniquement (osascript, afplay)
+          \item Sensible \`a la luminosit\'e
+          \item Signes \emph{statiques} seulement
+          \item Mono-utilisateur
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Pistes}
+        \begin{itemize}
+          \item Contr\^ole souris par geste
+          \item Mode apprentissage de gestes
+          \item Portage Windows/Linux
+          \item Logs persistants
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Utilisation de l'IA --- transparence}
+  \begin{block}{IA utilis\'ee~: Claude Code (Anthropic)}
+    Code g\'en\'er\'e/assist\'e encadr\'e par \texttt{\# CODE IA (Claude)} dans les sources.
+  \end{block}
+  \vspace{0.2cm}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \textbf{O\`u l'IA a aid\'e}
+      \begin{itemize}
+        \item Classe abstraite \texttt{GestureAction}
+        \item Refactorisation h\'eritage
+        \item Loader config + tests
+        \item Documentation
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{Ce que j'ai ma\^itris\'e}
+      \begin{itemize}
+        \item Logique de d\'etection (\texttt{fingers\_up})
+        \item Choix it\'eratif des patterns
+        \item Int\'egration MediaPipe/OpenCV
+        \item Correction de bugs
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.2cm}
+  \begin{center}
+    \textbf{Taux d'utilisation estim\'e~: $\approx$ 40\,\%} (architecture, tests, doc)
+  \end{center}
+\end{frame}
+
+% ============================================================
+\section{Bilan et r\'ef\'erences}
+% ============================================================
+
+\begin{frame}{Ce que ce projet m'a apport\'e}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Comp\'etences acquises}
+        \begin{itemize}
+          \item Conception \textbf{POO} concr\`ete (ABC, h\'eritage, polymorphisme)
+          \item Vision par ordinateur temps r\'eel
+          \item Tests automatis\'es et mocking
+          \item Gestion de configuration
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Applicable en entreprise~?}
+        \textbf{Oui}~:
+        \begin{itemize}
+          \item Architecture extensible (OCP)
+          \item Tests $\rightarrow$ int\'egration continue
+          \item Config externe $\rightarrow$ d\'eploiement
+          \item Tra\c{c}abilit\'e (Git, doc, IA d\'eclar\'ee)
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Ce que j'aurais chang\'e dans l'\'enonc\'e}
+  \begin{itemize}
+    \item[\textcolor{green!60!black}{$+$}] Sujet libre~: \textbf{tr\`es motivant}, permet de choisir un domaine qui passionne.
+    \item[\textcolor{green!60!black}{$+$}] Exigences claires (POO, tests, doc)~: bon cadre p\'edagogique.
+    \vspace{0.3cm}
+    \item[\textcolor{accent}{$\sim$}] Pr\'eciser un \textbf{ordre de grandeur} attendu (nb de classes, lignes) pour cadrer la port\'ee.
+    \item[\textcolor{accent}{$\sim$}] Proposer une \textbf{liste d'exemples} de sujets pour ceux qui h\'esitent.
+    \item[\textcolor{accent}{$\sim$}] Donner un \textbf{barème d\'etaill\'e des bonus} pour mieux prioriser.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Bibliographie et r\'ef\'erences}
+  \begin{block}{Biblioth\`eques et documentation}
+    \begin{itemize}
+      \item \textbf{MediaPipe} (Google) --- d\'etection de mains
+      \item \textbf{OpenCV} --- vision par ordinateur
+      \item \textbf{Python ABC} --- classes abstraites
+      \item \textbf{pytest} --- tests unitaires
+      \item \textbf{MSS} --- capture d'\'ecran
+    \end{itemize}
+  \end{block}
+  \begin{block}{Intelligence artificielle}
+    \begin{itemize}
+      \item \textbf{Claude Code} (Anthropic) --- assistance architecture, tests, documentation
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+% --- DIAPO FINALE ---
+\begin{frame}[plain]
+  \begin{center}
+    \vfill
+    {\Huge \textbf{\textcolor{cnamblue}{Merci de votre attention}}}\\[0.6cm]
+    {\Large Questions \& r\'eponses}\\[1cm]
+    {\large HandControlPC --- Mohamed Amine Sobhi}\\[0.2cm]
+    {\normalsize Cnam NFP101 --- Mai 2026}
+    \vfill
+  \end{center}
+\end{frame}
+
+\end{document}

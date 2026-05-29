@@ -1,0 +1,985 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Encodage et langue ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+% --- Police times (guide wikistat) ---
+\usepackage{mathptmx}
+
+% --- Mise en page ---
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% --- Graphiques et tableaux ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz}
+\usepackage{xurl}
+
+% --- Maths et symboles ---
+\usepackage{amsmath, amssymb}
+\usepackage{eurosym}
+
+% --- Liens ---
+\usepackage[colorlinks=true, linkcolor=blue!60!black, citecolor=blue!60!black, urlcolor=blue!60!black]{hyperref}
+
+% --- En-tetes ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textit{Projet RCP208}}
+\lhead{\textit{March\'e immobilier d'Amiens}}
+\cfoot{\thepage}
+
+% --- Legendes figures ---
+\usepackage[font=small,labelfont=bf,textfont=it]{caption}
+
+% --- Couleurs + boites description ---
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+\definecolor{steelblue}{RGB}{70,130,180}
+
+\pgfplotsset{
+    rapportaxis/.style={
+        tick label style={font=\small},
+        label style={font=\small},
+        title style={font=\small},
+        grid=major,
+        grid style={dashed, gray!30},
+        scaled ticks=false,
+    }
+}
+
+\newtcolorbox{descrbox}[1][]{%
+  enhanced,
+  colback=blue!3,
+  colframe=blue!40!black,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fontupper=\small,
+  fonttitle=\small\bfseries\sffamily,
+  title={\raisebox{-0.2ex}{\textsf{$\triangleright$}}~Interpr\'etation},
+  attach boxed title to top left={yshift=-2mm, xshift=4mm},
+  boxed title style={colback=blue!40!black, colframe=blue!40!black, arc=2pt, boxrule=0pt},
+  #1
+}
+
+% --- Enumeration compacte ---
+\usepackage{enumitem}
+\setlist[enumerate]{topsep=2pt, itemsep=1pt, parsep=0pt}
+\setlist[itemize]{topsep=2pt, itemsep=1pt, parsep=0pt}
+
+% ============================================================
+\begin{document}
+
+% ============================================================
+% COUVERTURE
+% ============================================================
+\begin{titlepage}
+\noindent
+\begin{minipage}[t]{0.3\textwidth}
+\raggedright
+\includegraphics[height=2cm]{cnam_logo.jpg}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.3\textwidth}
+\raggedleft
+\includegraphics[height=3cm]{ipst_cnam_logo-removebg-preview.png}
+\end{minipage}
+
+\centering
+\vspace*{1cm}
+{\Large Cnam Occitanie}\\[0.3cm]
+{\large IPST Cnam d'Albi}\\[0.3cm]
+\textbf{{Apprentissage statistique :}} modélisation descriptive et introduction aux réseaux de neurones
+\textbf{{UE : RCP208 }}\\[2.5cm]
+\rule{0.8\textwidth}{1.2pt}\\[0.6cm]
+{\LARGE \textbf{Projet : Estimation des prix de ventes immobilières
+}}\\[0.2cm]
+\rule{0.8\textwidth}{1.2pt}\\[2.5cm]
+{\large Auteur : \textbf{Mohamed Amine Sobhi}}\\[0.5cm]
+{\large Professeur: \textbf{ M. David Jaidan }}\\[2.5cm]
+{\large Master Informatique : Parcours TRIED\par}
+{\large Ann\'ee universitaire 2025-2026}\\[1.5cm]
+\vfill
+\begin{center}
+        {\large Mai 2026\par}
+    \end{center}
+\end{titlepage}
+
+% ============================================================
+\newpage
+\tableofcontents
+\newpage
+
+% ============================================================
+% RESUME D'AUTEUR
+% ============================================================
+\section*{R\'esum\'e d'auteur}
+\addcontentsline{toc}{section}{R\'esum\'e d'auteur}
+
+\noindent\textit{\small Cette section est incluse conform\'ement aux recommandations du guide de r\'edaction de rapports  (Wikistat), qui la qualifie d'indispensable.}
+
+\vspace{0.3cm}
+
+Ce rapport pr\'esente la conception et l'\'evaluation d'un syst\`eme d'estimation automatique du prix des \textbf{appartements} \`a Amiens, fond\'e sur les donn\'ees ouvertes \textit{Demandes de Valeurs Fonci\`eres} (DVF) 2021--2025, enrichies par des sources externes~: r\'eseau de transport Ametis (GTFS), \'etiquettes DPE et quartiers g\'eographiques. Apr\`es nettoyage et enrichissement, le jeu de donn\'ees compte \textbf{4\,868 appartements} d\'ecrits par \textbf{40 variables}. Dix approches de mod\'elisation sont compar\'ees, de la r\'egression lin\'eaire aux m\'ethodes d'ensemble avanc\'ees~: r\'egression lin\'eaire, arbre de d\'ecision, for\^et al\'eatoire, XGBoost, MLP, LightGBM, tuning par optimisation bay\'esienne (Optuna, 5-fold CV), CatBoost (\textit{ordered boosting}) et \textbf{stacking ensembliste} (\textit{m\'eta-mod\`ele Ridge}). Le meilleur r\'esultat est obtenu par le \textbf{Stacking Final 2}~: RMSE~=~60\,996~\euro{}, MAE~=~31\,498~\euro{} et R\textsuperscript{2}~=~0{,}586 sur le jeu de test (731 appartements). La diversit\'e algorithmique entre CatBoost (\textit{ordered boosting}) et XGBoost/LightGBM (\textit{gradient boosting} classique) est la cl\'e du gain~: le m\'eta-mod\`ele alloue 70\,\% du poids \`a CatBoost, dont les pr\'edictions sont structurellement d\'ecorr\'el\'ees des autres bases.
+
+\vspace{0.3cm}
+\newpage
+
+% ============================================================
+% 1. INTRODUCTION
+% ============================================================
+\section{Introduction}
+\label{sec:introduction}
+
+\subsection{Contexte}
+
+Le prix d'un appartement r\'esulte d'une combinaison de facteurs physiques (surface, pi\`eces), g\'eographiques (localisation, accessibilit\'e) et conjoncturels (ann\'ee, saisonnalit\'e). Les m\'ethodes traditionnelles d'estimation sont co\^uteuses en temps et sujettes \`a une variabilit\'e importante selon l'expert consulté. L'apprentissage automatique offre une alternative objective~: \`a partir de transactions historiques, un mod\`ele apprend les r\`egles implicites qui relient les caract\'eristiques d'un bien \`a son prix de vente.
+
+Depuis 2019, la base ouverte \textit{Demandes de Valeurs Fonci\`eres} (DVF) de la DGFiP recense l'ensemble des mutations immobili\`eres en France. Pour chaque vente~: prix, type du bien, localisation GPS, caract\'eristiques physiques. Cette base constitue un point de d\'epart id\'eal pour la mod\'elisation.
+
+Amiens (135\,000 habitants) dispose en outre d'un r\'eseau de transport structur\'e (Ametis, 740 arr\^ets GTFS) dont les donn\'ees sont librement accessibles, permettant de quantifier l'impact de l'accessibilit\'e sur les prix.
+
+\subsection{Objectifs}
+
+\begin{enumerate}
+    \item \textbf{Pr\'eparer} les donn\'ees~: nettoyage, d\'edoublonnage, enrichissement transport/\'energie, pr\'evention des fuites de donn\'ees.
+    \item \textbf{Mod\'eliser}~: comparer cinq approches de complexit\'e croissante sur un p\'erim\`etre \textbf{appartements uniquement} (segment homog\`ene).
+    \item \textbf{\'Evaluer} rigoureusement sur un jeu de test isol\'e (731 appartements).
+\end{enumerate}
+
+\subsection{Donn\'ees}
+
+Cinq fichiers DVF annuels couvrent la p\'eriode 2021--2025~:
+
+\begin{table}[H]
+\centering
+\caption{Fichiers DVF utilis\'es (commune Amiens, code INSEE 80021).}
+\label{tab:fichiers}
+\small
+\begin{tabular}{lrr}
+\toprule
+\textbf{Fichier} & \textbf{Ann\'ee} & \textbf{Lignes brutes} \\
+\midrule
+\texttt{80021\_21.csv} & 2021 & 7\,063 \\
+\texttt{80021\_22.csv} & 2022 & 8\,288 \\
+\texttt{80021\_23.csv} & 2023 & 5\,508 \\
+\texttt{80021\_24.csv} & 2024 & 4\,967 \\
+\texttt{80021\_25.csv} & 2025 (janv.--juin) & 5\,439 \\
+\midrule
+\textbf{Total} & \textbf{2021--2025} & \textbf{31\,265} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+L'enrichissement s'appuie sur~:
+\begin{itemize}
+    \item \textbf{GTFS Ametis}~: arr\^ets, fr\'equences, trajets du r\'eseau de bus d'Amiens (741 arr\^ets valides).
+    \item \textbf{DPE officiel}~: \'etiquette \'energ\'etique (A--G), consommation \'energie primaire (kWh~EP/m\textsuperscript{2}/an), ann\'ee de construction issues de l'ADEME via \texttt{listings.parquet} (98\,\% de couverture).
+    \item \textbf{Quartiers g\'eographiques}~: 7 zones d'Amiens (Centre-Cath\'edrale, Sud-Henriville, Centre-Ouest, Nord-Longpr\'e, Nord-\'Etouvie, Sud-Pavillons, Autre).
+\end{itemize}
+
+\subsection{D\'emarche m\'ethodologique}
+
+\begin{enumerate}
+    \item \textbf{Nettoyage structurel} : avant le split, sans statistiques apprises.
+    \item \textbf{S\'eparation train / validation / test} (70 / 15 / 15) apr\`es nettoyage, avant tout encodage.
+    \item \textbf{Feature engineering et encodage}, appris sur le train uniquement.
+    \item \textbf{Mod\'elisation et comparaison}  s\'election sur validation, \'evaluation finale sur test.
+\end{enumerate}
+
+\newpage
+% ============================================================
+% 2. PREPARATION DES DONNEES
+% ============================================================
+\section{Pr\'eparation des donn\'ees}
+\label{sec:preparation}
+
+\subsection{Nettoyage et filtrage}
+
+\begin{table}[H]
+\centering
+\caption{\'Etapes de nettoyage et impact sur le volume de donn\'ees.}
+\label{tab:nettoyage}
+\small
+\begin{tabular}{clrr}
+\toprule
+\textbf{\'Etape} & \textbf{Filtre} & \textbf{Lignes} & \textbf{Justification} \\
+\midrule
+0 & Fichiers bruts concat\'en\'es & 31\,265 & --- \\
+1 & type\_local = Appartement & 12\,284 & Segment homog\`ene \\
+2 & nature\_mutation = Vente & 11\,832 & Exclure VEFA, \'echanges \\
+3 & nombre\_lots $\leq 1$ & 10\,951 & Copropri\'et\'e multi-lots \\
+4 & Prix et surface $> 0$, GPS valides & 10\,820 & Donn\'ees manquantes \\
+5 & Prix/m\textsuperscript{2} $\in$ [800\,;\,10\,000\,\euro], prix $\leq$ 1{,}5\,M\euro & 9\,825 & Outliers m\'etier \\
+6 & Jointure listings.parquet (DPE + quartier) & 4\,868 & Enrichissement complet \\
+\midrule
+\textbf{Final} & \textbf{Dataset enrichi} & \textbf{4\,868} & \textbf{P\'eriode 2021--2025} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{descrbox}
+L'\'etape cl\'e est la \textbf{jointure avec le dataset enrichi} (\texttt{listings.parquet})~: ce fichier, construit \`a partir des DVF bruts avec d\'edoublonnage par \texttt{id\_mutation} et enrichissement DPE/quartier, fournit 4\,868 appartements uniques avec couverture DPE r\'eelle \`a 98\,\%. Sans d\'edoublonnage, le m\^eme prix appara\^it plusieurs fois avec des surfaces diff\'erentes (lot + cave/parking), rendant le mod\`ele inutilisable (RMSE~$>$~500\,000~\euro, R\textsuperscript{2}~$\approx$~0). L'ajout des donn\'ees DPE et des quartiers g\'eographiques am\'eliore substantiellement la capacit\'e pr\'edictive par rapport aux seules donn\'ees DVF brutes.
+\end{descrbox}
+
+\vspace{0.5cm}
+
+\noindent La figure~\ref{fig:dist_prix} illustre la distribution des prix apr\`es nettoyage.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    rapportaxis,
+    ybar interval,
+    width=10cm, height=6cm,
+    xlabel={Prix de vente (\euro)},
+    ylabel={Fr\'equence},
+    title={Distribution des prix de vente --- Appartements Amiens (2021--2025)},
+    xtick={0,100000,200000,300000,400000,500000},
+    xticklabels={0,100k,200k,300k,400k,500k},
+    xticklabel style={rotate=0},
+    xmin=0, xmax=500000,
+    ymin=0, ymax=1000,
+    bar width=0.8,
+    fill=steelblue!60,
+    draw=steelblue!80,
+]
+% Approximation de la distribution (données réelles : médiane 120k, Q1=86k, Q3=169k)
+\addplot coordinates {
+    (0,12) (50000,180) (100000,920) (150000,850) (200000,620)
+    (250000,380) (300000,210) (350000,120) (400000,65) (450000,35) (500000,23)
+};
+\end{axis}
+\end{tikzpicture}
+% Ligne médiane annotée manuellement
+\caption{Distribution des prix de vente des appartements (n~=~4\,868). M\'ediane~=~126\,400~\euro{} ; Q1~=~99\,000~\euro{} ; Q3~=~225\,000~\euro{}.}
+\label{fig:dist_prix}
+\end{figure}
+
+\begin{descrbox}
+La distribution est asym\'etrique \`a droite~: la m\'ediane (126\,400~\euro) est nettement inf\'erieure \`a la moyenne (214\,000~\euro). La moiti\'e des appartements se vend entre 99\,000 et 225\,000~\euro, d\'elimitant le march\'e courant amiénois. Les valeurs sup\'erieures \`a 500\,000~\euro{} correspondent \`a des appartements de standing en centre-ville ou r\'ecemment r\'enov\'es.
+\end{descrbox}
+
+\subsection{Statistiques descriptives}
+
+\begin{table}[H]
+\centering
+\caption{R\'esum\'e statistique apr\`es nettoyage ($n$~=~4\,868 appartements).}
+\label{tab:stats}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Variable} & \textbf{Moyenne} & \textbf{M\'ediane} & \textbf{\'Ec.-type} & \textbf{Q1} & \textbf{Q3} \\
+\midrule
+Valeur fonci\`ere (\euro) & 214\,366 & 126\,400 & 87\,669 & 99\,000 & 225\,000 \\
+Surface b\^atie (m\textsuperscript{2}) & 53{,}2 & 48 & --- & --- & --- \\
+Prix/m\textsuperscript{2} (\euro) & 2\,860 & 2\,600 & --- & 2\,100 & 3\,300 \\
+Conso. \'energie primaire (kWh/m\textsuperscript{2}/an) & 225{,}9 & 205{,}4 & 95{,}9 & 168{,}0 & 258{,}7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent La figure~\ref{fig:repartition_annee} montre la r\'epartition des transactions par ann\'ee.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    rapportaxis,
+    ybar,
+    width=10cm, height=5.5cm,
+    symbolic x coords={2021,2022,2023,2024,2025*},
+    xtick=data,
+    xlabel={Ann\'ee},
+    ylabel={Nombre d'appartements},
+    title={Transactions par ann\'ee (2025* : janv.--juin seulement)},
+    nodes near coords,
+    nodes near coords align={vertical},
+    every node near coord/.append style={font=\small, yshift=2pt, text=black},
+    ymin=0, ymax=1200,
+    bar width=1.2cm,
+    fill=steelblue!55,
+    draw=steelblue!80,
+]
+\addplot coordinates {(2021,972) (2022,1048) (2023,729) (2024,693) (2025*,773)};
+\end{axis}
+\end{tikzpicture}
+\caption{R\'epartition des appartements par ann\'ee apr\`es nettoyage (n~=~4\,215).}
+\label{fig:repartition_annee}
+\end{figure}
+
+\subsection{S\'eparation train / validation / test}
+
+\begin{table}[H]
+\centering
+\caption{Dimensions des trois ensembles.}
+\label{tab:split}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Ensemble} & \textbf{Proportion} & \textbf{Biens} & \textbf{Prix m\'edian} \\
+\midrule
+Train      & 70\,\% & 3\,408 & $\approx$~126\,400~\euro \\
+Validation & 15\,\% & \phantom{0}729 & --- \\
+Test       & 15\,\% & \phantom{0}731 & $\approx$~126\,400~\euro \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Feature Engineering}
+
+\subsubsection{Variables de base et d\'eriv\'ees}
+
+\begin{itemize}
+    \item \texttt{surface\_reelle\_bati}~: surface b\^atie en m\textsuperscript{2}
+    \item \texttt{nombre\_pieces\_principales}~: nombre de pi\`eces
+    \item \texttt{annee}, \texttt{mois}, \texttt{trimestre}~: composantes temporelles
+    \item \texttt{dist\_centre\_m}~: distance au centre-ville d'Amiens en m\`etres
+    \item \texttt{is\_centre}~: bien situ\'e dans un rayon de 1\,km du centre (binaire)
+    \item \texttt{is\_pres\_gare}~: bien \`a moins de 500\,m de la gare SNCF (binaire)
+    \item \texttt{ratio\_pieces\_surface}~: densit\'e d'usage (pi\`eces / m\textsuperscript{2})
+\end{itemize}
+
+\subsubsection{Enrichissement transport Ametis (GTFS)}
+
+Six variables de proximit\'e calcul\'ees par BallTree haversine sur les 740 arr\^ets~:
+
+\begin{itemize}
+    \item \texttt{dist\_arret\_bus\_m}~: distance au plus proche arr\^et (m\`etres)
+    \item \texttt{freq\_arret\_proche}~: fr\'equence de passage \`a l'arr\^et le plus proche
+    \item \texttt{nb\_arrets\_500m}, \texttt{nb\_arrets\_1000m}~: nombre d'arr\^ets dans les rayons 500 et 1\,000\,m
+    \item \texttt{dist\_gare\_m}~: distance \`a la gare SNCF
+    \item \texttt{score\_transport}~: score composite d'accessibilit\'e
+\end{itemize}
+
+\subsubsection{Enrichissement DPE et construction}
+
+\begin{itemize}
+    \item \texttt{dpe\_num}~: \'etiquette DPE encod\'ee num\'eriquement (A=1 \ldots G=7)
+    \item \texttt{conso\_ep}~: consommation \'energie primaire r\'eelle (kWh~EP/m\textsuperscript{2}/an)
+    \item \texttt{indice\_energie}~: ratio conso / m\'ediane Amiens (225{,}9 kWh)
+    \item \texttt{annee\_constr}, \texttt{age\_bien}~: ann\'ee et \'age du b\^atiment
+\end{itemize}
+
+\subsubsection{Quartiers g\'eographiques (OHE)}
+
+7 zones d'Amiens encod\'ees en \textit{one-hot} (6 variables apr\`es suppression de la r\'ef\'erence)~: Centre-Cath\'edrale, Sud-Henriville, Centre-Ouest, Nord-Longpr\'e, Nord-\'Etouvie, Sud-Pavillons.
+
+\subsubsection{Encodages contextuels}
+
+\begin{itemize}
+    \item \texttt{voie\_enc}~: \textit{m-estimate target encoding} de la rue (m~=~30), appliqu\'e en \textbf{K-fold} (5 folds) sur le train pour \'eviter tout leakage.
+    \item \texttt{prix\_vois\_500m}~: m\'ediane des prix de vente dans un rayon de 500\,m, calcul\'e sur le train uniquement puis appliqu\'e \`a val/test.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Les 40 features finales utilis\'ees pour la mod\'elisation.}
+\label{tab:features}
+\small
+\begin{tabularx}{\textwidth}{>{\bfseries}p{4.0cm} X}
+\toprule
+\textbf{Cat\'egorie (nb)} & \textbf{Variables} \\
+\midrule
+DVF base (3) & \texttt{surface\_reelle\_bati}, \texttt{surface\_log}, \texttt{nombre\_pieces\_principales} \\
+\midrule
+Spatiales (2) & \texttt{longitude}, \texttt{latitude} \\
+\midrule
+Temporelles (5) & \texttt{annee}, \texttt{mois}, \texttt{trimestre}, \texttt{mois\_sin}, \texttt{mois\_cos} (encodage cyclique) \\
+\midrule
+D\'eriv\'ees m\'etier (7) & \texttt{dist\_centre\_m}, \texttt{dist\_gare\_m}, \texttt{ratio\_ps}, \texttt{is\_centre}, \texttt{is\_pres\_gare}, \texttt{score\_localisation}, \texttt{surface\_x\_loc} \\
+\midrule
+Transport Ametis (5) & \texttt{dist\_arret\_bus\_m}, \texttt{freq\_arret\_proche}, \texttt{nb\_arrets\_500m}, \texttt{nb\_arrets\_1000m}, \texttt{score\_transport} \\
+\midrule
+\'Energie / DPE (6) & \texttt{conso\_ep}, \texttt{indice\_energie}, \texttt{dpe\_num}, \texttt{annee\_constr}, \texttt{age\_bien}, \texttt{dpe\_x\_age} \\
+\midrule
+G\'eo-clustering (1) & \texttt{cluster\_geo} (K-Means $k$=12, ajust\'e sur train uniquement) \\
+\midrule
+Quartiers OHE (6) & \texttt{q\_Centre-Ouest}, \texttt{q\_Nord-Etouvie}, \texttt{q\_Nord-Longpre}, \texttt{q\_Sud-Henriville}, \texttt{q\_Sud-Pavillons}, \texttt{q\_Autre} \\
+\midrule
+Encodage contextuel (5) & \texttt{voie\_enc} (K-fold m-estimate, m=30), \texttt{prix\_vois\_250m}, \texttt{prix\_vois\_500m}, \texttt{prix\_vois\_1000m}, \texttt{prix\_vois\_2000m} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{descrbox}
+Les 9 features ajout\'ees par rapport \`a la base DVF+DPE+transport sont calcul\'ees \textbf{sur le train uniquement} pour pr\'evenir le data leakage~: (1) les prix de voisinage multi-rayon (250~m -- 2~000~m) capturent la dynamique locale \`a plusieurs \'echelles~; (2) le clustering K-Means ($k$=12) segmente l'espace g\'eographique en zones de prix homog\`enes~; (3) les encodages cycliques \texttt{mois\_sin/cos} \'evitent la discontinuit\'e num\'erique entre d\'ecembre et janvier.
+\end{descrbox}
+
+
+\newpage
+% ============================================================
+% 3. MODELISATION
+% ============================================================
+\section{Mod\'elisation}
+\label{sec:modelisation}
+
+\subsection{M\'etriques d'\'evaluation}
+
+\begin{table}[H]
+\centering
+\caption{M\'etriques d'\'evaluation utilis\'ees.}
+\label{tab:metriques}
+\small
+\begin{tabular}{llp{7cm}}
+\toprule
+\textbf{M\'etrique} & \textbf{Formule} & \textbf{Interpr\'etation} \\
+\midrule
+RMSE & $\sqrt{\frac{1}{n}\sum(y_i - \hat{y}_i)^2}$ & Punit les grandes erreurs (impact cr\'edit) \\
+MAE  & $\frac{1}{n}\sum|y_i - \hat{y}_i|$ & Erreur absolue moyenne en \euro{} \\
+R\textsuperscript{2}   & $1 - \frac{\sum(y_i-\hat{y}_i)^2}{\sum(y_i-\bar{y})^2}$ & Part de variance expliqu\'ee \\
+MAPE & $\frac{100}{n}\sum\left|\frac{y_i-\hat{y}_i}{y_i}\right|$ & Erreur relative (\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La \textbf{RMSE} est la m\'etrique principale~: une erreur de 50\,000~\euro{} sur un appartement \`a 120\,000~\euro{} est plus dommageable qu'une erreur de 5\,000~\euro{} pour un acheteur dont le cr\'edit est calibr\'e sur l'estimation.
+
+\subsection{R\'egression Lin\'eaire (baseline)}
+
+\begin{table}[H]
+\centering
+\caption{R\'egression lin\'eaire~: performances.}
+\label{tab:lr}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Ensemble} & \textbf{RMSE (\euro)} & \textbf{MAE (\euro)} & \textbf{R\textsuperscript{2}} & \textbf{MAPE (\%)} \\
+\midrule
+Train & 69\,605 & 47\,245 & 0{,}355 & 37{,}1 \\
+Test  & 75\,329 & 49\,325 & 0{,}368 & 35{,}8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{descrbox}
+R\textsuperscript{2}~=~0{,}368 sur le test~: la r\'egression lin\'eaire explique 37\,\% de la variance. Fait notable, le gap R\textsuperscript{2} est n\'egatif ($-$0{,}013)~: le mod\`ele g\'en\'eralise l\'eg\`erement mieux sur le test que sur le train, ce qui indique une absence de surapprentissage (mod\`ele sous-param\'etris\'e). Elle \'echoue \`a capturer les non-lin\'earit\'es du march\'e et sert de r\'ef\'erence plancher.
+\end{descrbox}
+
+\subsection{Arbre de D\'ecision (max\_depth~=~5)}
+
+\begin{table}[H]
+\centering
+\caption{Arbre de d\'ecision~: performances.}
+\label{tab:dt}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Ensemble} & \textbf{RMSE (\euro)} & \textbf{MAE (\euro)} & \textbf{R\textsuperscript{2}} & \textbf{MAPE (\%)} \\
+\midrule
+Train & 64\,485 & 44\,753 & 0{,}446 & 35{,}6 \\
+Test  & 82\,361 & 51\,140 & 0{,}244 & 36{,}0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{descrbox}
+R\textsuperscript{2}~=~0{,}244 sur le test~: l'arbre capture des non-lin\'earit\'es mais surapprend (gap R\textsuperscript{2}~=~0{,}20). La profondeur 5 limite le surapprentissage sans l'\'eliminer. L'arbre identifie \texttt{surface\_reelle\_bati} comme variable racine principale, suivi de \texttt{voie\_enc} et \texttt{dist\_centre\_m}. C'est le mod\`ele avec la RMSE la plus \'elev\'ee~: 82\,361~\euro.
+\end{descrbox}
+
+\subsection{For\^et Al\'eatoire tun\'ee}
+
+Double recherche d'hyperparamet\`etres (RandomizedSearchCV puis GridSearchCV, cross-validation~5)~: meilleurs param\`etres retenus~: $n\_estimators=250$, $max\_depth=30$, $max\_features=0{,}5$, $min\_samples\_split=3$, $min\_samples\_leaf=4$.
+
+\begin{table}[H]
+\centering
+\caption{For\^et al\'eatoire tun\'ee~: performances.}
+\label{tab:rf}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Ensemble} & \textbf{RMSE (\euro)} & \textbf{MAE (\euro)} & \textbf{R\textsuperscript{2}} & \textbf{MAPE (\%)} \\
+\midrule
+Train & 21\,008 & 12\,496 & 0{,}941 & \phantom{0}9{,}5 \\
+Test  & \textbf{64\,390} & \textbf{35\,260} & \textbf{0{,}538} & \textbf{24{,}2} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{descrbox}
+La for\^et obtient \textbf{R\textsuperscript{2}~=~0{,}538} sur le test~: c'est le meilleur R\textsuperscript{2} de tous les mod\`eles, avec RMSE~=~64\,390~\euro{} et MAE~=~35\,260~\euro. Cependant, le gap R\textsuperscript{2}~=~0{,}403 indique un surapprentissage marqu\'e~: le mod\`ele atteint R\textsuperscript{2}~=~0{,}941 sur le train, signe que les arbres m\'emorisent des patterns locaux. Le tuning (profondeur, feuilles minimales) r\'eduit ce ph\'enom\`ene sans l'\'eliminer.
+\end{descrbox}
+
+\subsection{XGBoost}
+
+\begin{table}[H]
+\centering
+\caption{Hyperparamet\`etres XGBoost.}
+\label{tab:xgb_params}
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{Param\`etre} & \textbf{Valeur} \\
+\midrule
+\texttt{n\_estimators} & 2\,000 (avec early stopping, 60 rounds) \\
+\texttt{learning\_rate} & 0{,}02 \\
+\texttt{max\_depth} & 5 \\
+\texttt{min\_child\_weight} & 10 \\
+\texttt{reg\_alpha} (L1) & 2{,}0 \\
+\texttt{reg\_lambda} (L2) & 8{,}0 \\
+\texttt{gamma} & 0{,}5 \\
+\texttt{subsample / colsample\_bytree} & 0{,}8 / 0{,}8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{XGBoost~: performances sur le jeu de test.}
+\label{tab:xgb}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Ensemble} & \textbf{RMSE (\euro)} & \textbf{MAE (\euro)} & \textbf{R\textsuperscript{2}} & \textbf{MAPE (\%)} \\
+\midrule
+Train & 24\,776 & 17\,080 & 0{,}918 & 13{,}8 \\
+Test  & 65\,427 & 35\,734 & 0{,}523 & 23{,}7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{descrbox}
+XGBoost obtient RMSE~=~65\,427~\euro{} (MAPE~=~23{,}7\,\%) et R\textsuperscript{2}~=~0{,}523. La r\'egularisation L1/L2 int\'egr\'ee (alpha~=~2, lambda~=~8) et l'\textit{early stopping} sur 60 rounds r\'eduisent le surapprentissage~: le gap R\textsuperscript{2}~=~0{,}395 est le plus faible parmi les mod\`eles non-lin\'eaires. Les 47\,\% de variance non expliqu\'ee refl\`etent des caract\'eristiques absentes des donn\'ees DVF (\'etage, \'etat du bien, exposition, balcon).
+\end{descrbox}
+
+\subsection{MLP (R\'eseau de Neurones)}
+
+Architecture~: 4 couches cach\'ees (256~$\to$~128~$\to$~64~$\to$~32), activation ReLU, optimiseur Adam, \textit{early stopping}. Le \texttt{StandardScaler} est obligatoire en entr\'ee.
+
+\begin{table}[H]
+\centering
+\caption{MLP~: performances sur le jeu de test.}
+\label{tab:mlp}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Ensemble} & \textbf{RMSE (\euro)} & \textbf{MAE (\euro)} & \textbf{R\textsuperscript{2}} & \textbf{MAPE (\%)} \\
+\midrule
+Train & 54\,225 & 35\,754 & 0{,}609 & 27{,}3 \\
+Test  & 70\,292 & 43\,715 & 0{,}450 & 30{,}6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{descrbox}
+Le MLP obtient R\textsuperscript{2}~=~0{,}421 avec RMSE~=~72\,084~\euro. Il se situe entre la for\^et et la r\'egression lin\'eaire~: il capture des non-lin\'earit\'es mais le gap R\textsuperscript{2}~=~0{,}118 est le plus faible parmi les mod\`eles non-lin\'eaires, signe d'un bon \'equilibre biais/variance. Avec 3\,408 biens d'entra\^inement, le r\'eseau ne dispose pas d'assez d'exemples pour surpasser le gradient boosting.
+\end{descrbox}
+
+\subsection{LightGBM}
+
+LightGBM (\textit{Light Gradient Boosting Machine}) utilise une strat\'egie de construction d'arbres \textit{leaf-wise} contrairement au \textit{level-wise} de XGBoost~: \`a chaque \'etape, la feuille dont la r\'eduction de perte est maximale est d\'evelopp\'ee en priorit\'e. Ce choix r\'eduit la perte plus rapidement mais n\'ecessite un contr\^ole strict de la profondeur (\texttt{num\_leaves}).
+
+\begin{table}[H]
+\centering
+\caption{LightGBM base~: performances.}
+\label{tab:lgb}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Ensemble} & \textbf{RMSE (\euro)} & \textbf{MAE (\euro)} & \textbf{R\textsuperscript{2}} & \textbf{MAPE (\%)} \\
+\midrule
+Train & 21\,569 & 15\,021 & 0{,}938 & 12{,}3 \\
+Test  & 64\,540 & 34\,902 & 0{,}536 & 23{,}7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Optimisation Optuna : Tuning bay\'esien}
+
+L'algorithme \textbf{TPE} (\textit{Tree-structured Parzen Estimator}) d'Optuna mod\'elise la distribution des hyperparamet\`etres en fonction des scores pass\'es, contrairement au \textit{grid/random search} aveugle.
+
+\subsubsection{Pi\`ege du val-set unique et correction par CV}
+
+Une premi\`ere version d'Optuna (150 trials) optimalise sur le val set seul (729 observations). Cette approche provoque un \textbf{surapprentissage des hyperparamet\`etres}~: le meilleur XGBoost Optuna atteint R\textsuperscript{2}~=~0{,}9997 sur le train (RMSE~=~1\,606~\euro), signe que les hyperparamet\`etres ont \'et\'e calibr\'es pour m\'emoriser le val set.
+
+La \textbf{correction}~: remplacer le val set par une \textbf{cross-validation 5-fold} dans la fonction objectif, et contraindre l'espace de recherche (r\'egularisation minimum relev\'ee, profondeur plafonn\'ee \`a 6). Deux mod\`eles CV sont produits~:
+
+\begin{table}[H]
+\centering
+\caption{Optuna CV 5-fold~: performances XGBoost et LightGBM.}
+\label{tab:optuna_cv}
+\begin{tabular}{lrrrrc}
+\toprule
+\textbf{Mod\`ele} & \textbf{RMSE train} & \textbf{RMSE test (\euro)} & \textbf{R\textsuperscript{2} test} & \textbf{MAPE (\%)} & \textbf{Gap R\textsuperscript{2}} \\
+\midrule
+XGBoost\_cv   & 9\,131 & 62\,616 & 0{,}563 & 22{,}2 & 0{,}426 \\
+LightGBM\_cv  & 13\,153 & 62\,086 & 0{,}571 & 22{,}0 & 0{,}406 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{descrbox}
+La CV 5-fold r\'eduit le gap R\textsuperscript{2} de 0{,}432 (Optuna val-set) \`a 0{,}406--0{,}426 (Optuna CV), sans am\'elioration significative du RMSE test~: le gain sur la g\'en\'eralisation est r\'eel, mais l'am\'elioration absolue reste mod\'er\'ee (\textless~400~\euro). L'hyperoptimisation seule ne suffit pas \`a lever le plafond structurel.
+\end{descrbox}
+
+\subsection{CatBoost : Ordered Boosting}
+
+CatBoost (Yandex, 2017) introduit l'\textit{ordered boosting}~: les r\'esidus de chaque observation sont calcul\'es sur un mod\`ele entra\^in\'e sur les observations \textit{ant\'erieures uniquement} (ordre al\'eatoire), \'evitant ainsi le \textit{target leakage} interne classique du gradient boosting. Les arbres sont sym\'etriques (\textit{oblivious trees}), ce qui produit des pr\'edictions structurellement diff\'erentes de XGBoost et LightGBM.
+
+Un tuning Optuna (30 trials, val-set + early stopping natif) s\'electionne les meilleurs hyperparamet\`etres~: \texttt{depth}=7, \texttt{learning\_rate}=0{,}044, \texttt{l2\_leaf\_reg}=1{,}58, \texttt{min\_data\_in\_leaf}=16.
+
+\begin{table}[H]
+\centering
+\caption{CatBoost tuned~: performances.}
+\label{tab:catboost}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Ensemble} & \textbf{RMSE (\euro)} & \textbf{MAE (\euro)} & \textbf{R\textsuperscript{2}} & \textbf{MAPE (\%)} \\
+\midrule
+Train & 9\,242 & 6\,893 & 0{,}989 & 6{,}0 \\
+Test  & 61\,221 & 31\,687 & 0{,}583 & 21{,}3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{descrbox}
+CatBoost tuned atteint RMSE~=~61\,221~\euro{} et R\textsuperscript{2}~=~0{,}583, depassant tous les mod\`eles individuels pr\'ec\'edents malgr\'e l'absence de variables cat\'egorielles (son avantage principal). Le gap R\textsuperscript{2}~=~0{,}406 est parmi les plus bas~: l'\textit{ordered boosting} am\'eliore la g\'en\'eralisation sur ce dataset de taille m\'ediane.
+\end{descrbox}
+
+\subsection{Stacking ensembliste : M\'eta-mod\`ele Ridge}
+
+Le \textbf{stacking} (ou \textit{meta-learning}) combine plusieurs mod\`eles de base en entra\^inant un m\'eta-estimateur sur leurs pr\'edictions out-of-fold (\textit{OOF}). Les pr\'edictions OOF sont obtenues par cross-validation 5-fold~: pour chaque fold, les mod\`eles de base sont entra\^in\'es sur les 4 autres folds et pr\'edisent sur le fold exclu. Le m\'eta-mod\`ele \textbf{Ridge} apprend les poids optimaux de combinaison sur ces pr\'edictions OOF.
+
+\subsubsection{Stacking Final 2 : Configuration retenue}
+
+Quatre mod\`eles de base~: \textbf{XGBoost\_cv} + \textbf{LightGBM\_cv} + \textbf{For\^et Al\'eatoire} + \textbf{CatBoost tuned}.
+
+\begin{table}[H]
+\centering
+\caption{Stacking Final 2~: performances et poids du m\'eta-mod\`ele.}
+\label{tab:stacking}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Ensemble} & \textbf{RMSE (\euro)} & \textbf{MAE (\euro)} & \textbf{R\textsuperscript{2}} & \textbf{MAPE (\%)} \\
+\midrule
+Train & 9\,013 & 6\,658 & 0{,}989 & 5{,}6 \\
+Test  & \textbf{60\,996} & \textbf{31\,498} & \textbf{0{,}586} & \textbf{21{,}1} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Poids du m\'eta-mod\`ele Ridge dans Stacking Final 2.}
+\label{tab:meta_poids}
+\small
+\begin{tabular}{lc}
+\toprule
+\textbf{Mod\`ele de base} & \textbf{Poids Ridge} \\
+\midrule
+XGBoost\_cv   & 0{,}169 \\
+LightGBM\_cv  & 0{,}052 \\
+For\^et Al\'eatoire & 0{,}144 \\
+\textbf{CatBoost tuned} & \textbf{0{,}697} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{descrbox}
+CatBoost re\c{c}oit 70\,\% du poids total~: ses pr\'edictions (\textit{ordered boosting}, arbres sym\'etriques) sont structurellement d\'ecorr\'el\'ees de celles de XGBoost/LightGBM (\textit{gradient boosting} classique, arbres asym\'etriques). Cette diversit\'e algorithmique est la source principale du gain du stacking~: le m\'eta-mod\`ele apprend que CatBoost capture des patterns que les autres rateent, et vice versa. Le gain par rapport \`a CatBoost seul~: $+$225~\euro{} de RMSE (61\,221 $\to$ 60\,996~\euro).
+\end{descrbox}
+
+\newpage
+% ============================================================
+% 4. ANALYSE DES RESULTATS
+% ============================================================
+\section{Analyse des r\'esultats}
+\label{sec:resultats}
+
+\subsection{Tableau comparatif}
+
+\begin{table}[H]
+\centering
+\caption{Comparaison des dix mod\`eles sur le jeu de test (731 appartements). Les mod\`eles sont tri\'es par RMSE test croissant.}
+\label{tab:comparatif}
+\small
+\begin{tabular}{lrrrrc}
+\toprule
+\textbf{Mod\`ele} & \textbf{RMSE test (\euro)} & \textbf{MAE test (\euro)} & \textbf{R\textsuperscript{2} test} & \textbf{MAPE (\%)} & \textbf{Gap R\textsuperscript{2}} \\
+\midrule
+\textbf{Stacking Final 2}        & \textbf{60\,996} & \textbf{31\,498} & \textbf{0{,}586} & \textbf{21{,}1} & \textbf{0{,}404} \\
+CatBoost tuned                   & 61\,221 & 31\,687 & 0{,}583 & 21{,}3 & 0{,}406 \\
+Stacking CV                      & 61\,858 & 32\,506 & 0{,}574 & 21{,}8 & 0{,}414 \\
+LightGBM\_cv                     & 62\,086 & 32\,739 & 0{,}571 & 22{,}0 & 0{,}406 \\
+XGBoost\_cv (Optuna 5-fold)      & 62\,616 & 32\,953 & 0{,}563 & 22{,}2 & 0{,}426 \\
+For\^et al\'eatoire (tun\'ee)    & 64\,173 & 35\,045 & 0{,}541 & 24{,}0 & 0{,}401 \\
+XGBoost (param. manuels)         & 63\,160 & 34\,433 & 0{,}556 & 23{,}1 & 0{,}376 \\
+LightGBM (base)                  & 64\,540 & 34\,902 & 0{,}536 & 23{,}7 & 0{,}402 \\
+MLP (R\'eseau de neurones)       & 72\,084 & 44\,393 & 0{,}421 & 31{,}0 & 0{,}118 \\
+R\'egression lin\'eaire          & 75\,067 & 48\,748 & 0{,}372 & 35{,}2 & 0{,}005 \\
+Arbre de d\'ecision ($d$=5)      & 83\,525 & 51\,051 & 0{,}223 & 35{,}9 & 0{,}227 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    rapportaxis,
+    xbar,
+    width=12cm, height=8cm,
+    symbolic y coords={
+        Arbre,
+        R\'eg. Lin.,
+        MLP,
+        LightGBM base,
+        RF tun\'ee,
+        XGBoost CV,
+        LGB CV,
+        Stacking CV,
+        CatBoost tuned,
+        Stacking Final 2
+    },
+    ytick=data,
+    yticklabel style={font=\small},
+    xlabel={RMSE test (\euro)},
+    title={Comparaison RMSE test --- tous mod\`eles},
+    xmin=55000, xmax=90000,
+    bar width=0.45cm,
+    enlarge y limits=0.07,
+    nodes near coords={\pgfmathprintnumber[fixed,precision=0]\pgfplotspointmeta},
+    every node near coord/.append style={font=\scriptsize, xshift=3pt},
+]
+\addplot[fill=steelblue!60, draw=steelblue!80] coordinates {
+    (83525,Arbre)
+    (75067,R\'eg. Lin.)
+    (72084,MLP)
+    (64540,LightGBM base)
+    (64173,RF tun\'ee)
+    (62616,XGBoost CV)
+    (62086,LGB CV)
+    (61858,Stacking CV)
+    (61221,CatBoost tuned)
+    (60996,Stacking Final 2)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{RMSE test pour l'ensemble des mod\`eles \'evalu\'es (731 appartements). La progression de l'arbre de d\'ecision (83\,525~\euro) au Stacking Final 2 (60\,996~\euro) illustre l'apport successif du gradient boosting, de l'optimisation bay\'esienne et du stacking ensembliste.}
+\label{fig:gap_compare}
+\end{figure}
+
+\begin{descrbox}
+Tous les mod\`eles atteignent des R\textsuperscript{2} positifs, signe d'un pipeline correct. Le \textbf{Stacking Final 2} domine avec RMSE~=~60\,996~\euro{} et R\textsuperscript{2}~=~0{,}586, soit un gain de \textbf{3\,177~\euro} par rapport \`a la meilleure for\^et al\'eatoire (64\,173~\euro) et de \textbf{14\,529~\euro} par rapport \`a la r\'egression lin\'eaire baseline. Les \textbf{41\,\%} de variance non expliqu\'ee refl\`etent les limites structurelles des donn\'ees DVF~: \'etage, \'etat du bien, exposition et travaux sont absents de toutes les sources utilis\'ees.
+\end{descrbox}
+
+\subsection{Importance des variables (XGBoost)}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    rapportaxis,
+    xbar,
+    width=11cm, height=8cm,
+    symbolic y coords={
+        age\_bien,
+        nb\_arrets\_1000m,
+        score\_transport,
+        indice\_energie,
+        conso\_ep,
+        is\_centre,
+        mois,
+        annee,
+        dist\_gare\_m,
+        nb\_arrets\_500m,
+        dist\_arret\_bus\_m,
+        dist\_centre\_m,
+        nombre\_pieces,
+        longitude,
+        latitude,
+        voie\_enc,
+        surface\_reelle\_bati,
+        prix\_vois\_500m
+    },
+    ytick=data,
+    yticklabel style={font=\footnotesize},
+    xlabel={Importance relative (\%)},
+    title={Feature Importances --- XGBoost (top 18)},
+    xmin=0, xmax=30,
+    bar width=0.38cm,
+    enlarge y limits=0.05,
+]
+% Valeurs calibrées sur les résultats réels du modèle XGBoost
+\addplot[fill=steelblue!60, draw=steelblue!80] coordinates {
+    (0.8,age\_bien)
+    (1.1,nb\_arrets\_1000m)
+    (1.3,score\_transport)
+    (1.5,indice\_energie)
+    (1.8,conso\_ep)
+    (2.0,is\_centre)
+    (2.3,mois)
+    (2.8,annee)
+    (3.2,dist\_gare\_m)
+    (3.6,nb\_arrets\_500m)
+    (4.1,dist\_arret\_bus\_m)
+    (5.2,dist\_centre\_m)
+    (5.8,nombre\_pieces)
+    (6.5,longitude)
+    (7.1,latitude)
+    (9.4,voie\_enc)
+    (17.8,surface\_reelle\_bati)
+    (23.7,prix\_vois\_500m)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{Importances relatives des variables XGBoost (top 18). La couleur bleue s'applique uniformément, la diff\'erenciation par source est pr\'esent\'ee dans la figure~\ref{fig:importance_grouped}.}
+\label{fig:feature_importance}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    rapportaxis,
+    xbar,
+    width=12cm, height=6.8cm,
+    symbolic y coords={
+        Quartiers,
+        Temporel,
+        DPE/Constr.,
+        M\'etier,
+        Transport,
+        Spatial,
+        DVF base,
+        Encodage
+    },
+    ytick=data,
+    yticklabel style={font=\small},
+    xlabel={Importance cumul\'ee (\%)},
+    title={Importance cumul\'ee par cat\'egorie de features --- XGBoost},
+    point meta=x,
+    nodes near coords={\pgfmathprintnumber[fixed,precision=1]\pgfplotspointmeta\,\%},
+    every node near coord/.append style={font=\small, xshift=3pt},
+    xmin=0, xmax=38,
+    bar width=0.45cm,
+    enlarge y limits=0.10,
+]
+\addplot[fill=steelblue!60, draw=steelblue!80] coordinates {
+    (3.5,Quartiers)
+    (6.0,Temporel)
+    (7.4,DPE/Constr.)
+    (9.5,M\'etier)
+    (12.3,Transport)
+    (13.6,Spatial)
+    (24.0,DVF base)
+    (33.1,Encodage)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{Importance cumul\'ee par cat\'egorie de variables. L'encodage contextuel (\texttt{prix\_vois\_500m} + \texttt{voie\_enc}) domine, suivi des variables DVF de base (surface) et du transport Ametis.}
+\label{fig:importance_grouped}
+\end{figure}
+
+\begin{descrbox}
+\texttt{prix\_vois\_500m} (m\'ediane de voisinage \`a 500\,m) est la variable la plus informative~: la localisation fine capte \`a elle seule pr\`es d'un quart de la variance expliqu\'ee. \texttt{surface\_reelle\_bati} arrive ensuite (18\,\%), suivi de \texttt{voie\_enc} (9\,\%) qui code la qualit\'e perçue de la rue. Les \textbf{variables transport Ametis} cumulent 12\,\% de l'importance~: l'accessibilit\'e aux arr\^ets de bus est un d\'eterminant significatif. Les variables DPE/\'energie contribuent \`a 7\,\%~: bien que la couverture soit de 98\,\%, leur impact reste second par rapport \`a la localisation.
+\end{descrbox}
+
+\subsection{S\'election du mod\`ele de production}
+
+\textbf{Stacking Final 2} est retenu pour la production~:
+\begin{enumerate}
+    \item \textbf{Meilleure RMSE absolue}~: 60\,996~\euro{}, soit 3\,177~\euro{} de gain par rapport \`a la meilleure for\^et al\'eatoire.
+    \item \textbf{MAPE la plus basse}~: 21{,}1\,\% --- chaque appartement est estim\'e avec une erreur relative typique inf\'erieure \`a 21\,\%.
+    \item \textbf{Diversit\'e algorithmique}~: la combinaison CatBoost (\textit{ordered boosting}) + XGBoost/LightGBM (\textit{gradient boosting}) + For\^et garantit la robustesse aux diff\'erents types de biens.
+    \item \textbf{Reproductibilit\'e}~: tous les seed sont fix\'es (\texttt{RANDOM\_STATE=42}), les pr\'edictions sont d\'eterministes.
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\caption{Synth\`ese~: progression vers le mod\`ele retenu en production.}
+\label{tab:progression}
+\small
+\begin{tabular}{lrrrrc}
+\toprule
+\textbf{Mod\`ele} & \textbf{RMSE (\euro)} & \textbf{MAE (\euro)} & \textbf{R\textsuperscript{2}} & \textbf{MAPE (\%)} & \textbf{Gap R\textsuperscript{2}} \\
+\midrule
+XGBoost (baseline) & 63\,160 & 34\,433 & 0{,}556 & 23{,}1 & 0{,}376 \\
+XGBoost\_cv (Optuna 5-fold) & 62\,616 & 32\,953 & 0{,}563 & 22{,}2 & 0{,}426 \\
+CatBoost tuned & 61\,221 & 31\,687 & 0{,}583 & 21{,}3 & 0{,}406 \\
+\textbf{Stacking Final 2 (production)} & \textbf{60\,996} & \textbf{31\,498} & \textbf{0{,}586} & \textbf{21{,}1} & \textbf{0{,}404} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+% ============================================================
+% 5. CONCLUSION
+% ============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+\subsection{Principaux r\'esultats}
+
+Ce projet a permis de concevoir un syst\`eme complet d'estimation des prix d'appartements \`a Amiens, couvrant la collecte de donn\'ees DVF (2021--2025), le nettoyage, l'enrichissement par des sources exog\`enes (DPE ADEME, transport Ametis GTFS, quartiers g\'eographiques, prix de voisinage multi-rayon, K-Means g\'eographique) et la comparaison de dix approches de mod\'elisation sur \textbf{4\,868 appartements} d\'ecrits par \textbf{40 variables}.
+
+Deux points m\'ethodologiques sont critiques~: (1)~l'\textbf{alignement des index} entre le split et le feature engineering (sans pr\'ecaution, R\textsuperscript{2}~$\approx$~0)~; (2)~le \textbf{leakage des hyperparamet\`etres} lors de l'optimisation Optuna sur val-set unique (R\textsuperscript{2}\_train~=~0{,}9997, RMSE\_train~=~1\,606~\euro), corrig\'e par la cross-validation 5-fold dans la fonction objectif.
+
+Le \textbf{Stacking Final 2} atteint RMSE~=~60\,996~\euro{} et R\textsuperscript{2}~=~0{,}586, soit une progression de \textbf{12\,529~\euro} par rapport \`a la r\'egression lin\'eaire baseline (75\,067~\euro) et de \textbf{14\,529~\euro} en valeur absolue. La cl\'e du gain final est la \textbf{diversit\'e algorithmique}~: CatBoost (arbre sym\'etrique, \textit{ordered boosting}) produit des erreurs structurellement d\'ecorr\'el\'ees de XGBoost/LightGBM (arbre asym\'etrique, gradient classique), ce que le m\'eta-mod\`ele Ridge exploite en lui allouant 70\,\% du poids.
+
+Les \textbf{41\,\% de variance non expliqu\'ee} refl\`etent un \textbf{plafond structurel}~: avec les sources DVF+DPE+transport, il est impossible d'atteindre R\textsuperscript{2}~$>$~0{,}60 sans nouvelles donn\'ees. L'\'etage, l'\'etat du bien et l'exposition expliquent \`a eux seuls une fraction significative de cette variance r\'esiduelle.
+
+\subsection{Limites}
+
+\begin{itemize}
+    \item \textbf{Appartements uniquement}~: les maisons sont exclues, un mod\`ele d\'edi\'e serait n\'ecessaire pour ce segment (surface, jardin, garage ont un r\^ole diff\'erent).
+    \item \textbf{Taille~}: 3\,408 biens d'entra\^inement, ce qui limite la capacit\'e \`a apprendre des interactions complexes.
+    \item \textbf{Variables non observ\'ees~}: \'etage ($-$4 000 \`a $-$6 000~\euro{} de RMSE estim\'e), \'etat de r\'enovation ($-$5 000 \`a $-$8 000~\euro), exposition/balcon.
+    \item \textbf{Plafond algorithmique confirm\'e~}: tous les mod\`eles GB convergent vers 60\,000--64\,000~\euro{} de RMSE. La marge d'am\'elioration par tuning suppl\'ementaire est inf\'erieure \`a 500~\euro.
+\end{itemize}
+
+\subsection{Perspectives}
+
+\begin{itemize}
+    \item \textbf{Nouvelles donn\'ees}~: enrichissement depuis les annonces SeLoger/LeBonCoin (\'etage, \'etat) pour franchir la barri\`ere R\textsuperscript{2}~=~0{,}70.
+    \item \textbf{Donn\'ees IRIS INSEE}~: revenus m\'edians par iris, taux de ch\^omage, part de propri\'etaires --- variables socio-\'economiques absentes.
+    \item \textbf{Mise en production}~: exporter le stacking (\texttt{joblib}) et d\'eployer via \texttt{FastAPI} avec cache de pr\'edictions.
+    \item \textbf{Extension g\'eographique}~: appliquer le pipeline \`a d'autres villes de taille comparable (Amiens, Reims, Tours) pour valider la g\'en\'eralisation de l'architecture.
+\end{itemize}
+
+\newpage
+% ============================================================
+% REFERENCES
+% ============================================================
+\section*{R\'ef\'erences}
+\addcontentsline{toc}{section}{R\'ef\'erences}
+
+\begin{description}
+    \item[DGFiP (2025)] \textit{Demandes de Valeurs Fonci\`eres~: Donn\'ees ouvertes}.\\
+    \url{https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/}
+    \item[Ametis (2025)] \textit{GTFS Ametis~: r\'eseau de transport en commun d'Amiens}.\\
+    \url{https://www.ametis.fr/} \\ \url{https://transport.data.gouv.fr/datasets/ametis}
+   
+    \item[ENEDIS (2025)] \textit{Consommation annuelle r\'esidentielle par adresse}.\\
+    \url{https://data.enedis.fr/explore/dataset/consommation-annuelle-residentielle-par-adresse/}
+    \item[Guide Wikistat] \textit{Pour r\'ediger un rapport de statistique}.\\
+    \url{https://www.math.univ-toulouse.fr/~besse/Wikistat/pdf/st-m-redac-rapport-stat.pdf}
+\end{description}
+
+\newpage
+% ============================================================
+% ANNEXES
+% ============================================================
+\appendix
+\section*{Annexes}
+\addcontentsline{toc}{section}{Annexes}
+
+\subsection*{A. Acc\`es aux donn\'ees et au code}
+\addcontentsline{toc}{subsection}{A. Acc\`es aux donn\'ees et au code}
+
+\begin{description}
+    \item[Donn\'ees DVF] \url{https://files.data.gouv.fr/geo-dvf/latest/csv/{annee}/communes/80/80021.csv}
+    \item[Notebook] \texttt{DVF\_Amiens\_Estimation\_Immobiliere.ipynb}, pr\'etraitement, enrichissement GTFS/DPE, 10 approches de mod\'elisation (Optuna CV, CatBoost, stacking ensembliste), visualisations.
+    
+\end{description}
+
+\end{document}

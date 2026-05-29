@@ -28,6 +28,26 @@ def test_recognize_sign_L():
     assert recognize_sign([1, 1, 0, 0, 0]) == "L"
 
 
+def test_recognize_sign_O():
+    assert recognize_sign([1, 0, 0, 0, 1]) == "O"
+
+
+def test_recognize_sign_N():
+    assert recognize_sign([1, 0, 1, 0, 0]) == "N"
+
+
+def test_recognize_sign_J():
+    assert recognize_sign([0, 0, 0, 0, 1]) == "J"
+
+
+def test_recognize_sign_U():
+    assert recognize_sign([0, 1, 1, 0, 0]) == "U"
+
+
+def test_recognize_sign_R():
+    assert recognize_sign([0, 1, 0, 0, 0]) == "R"
+
+
 def test_recognize_sign_unknown():
     assert recognize_sign([0, 0, 0, 0, 0]) is None
     assert recognize_sign([1, 1, 1, 1, 1]) is None
@@ -36,6 +56,17 @@ def test_recognize_sign_unknown():
 def test_all_signs_are_recognized():
     for name, pattern in SIGNS.items():
         assert recognize_sign(pattern) == name
+
+
+def test_bonjour_sequence_letters_all_present():
+    from test_sign_recognition import BONJOUR_SEQUENCE
+    for letter in BONJOUR_SEQUENCE:
+        assert letter in SIGNS, f"La lettre '{letter}' de BONJOUR n'est pas dans SIGNS"
+
+
+def test_bonjour_sequence_is_correct():
+    from test_sign_recognition import BONJOUR_SEQUENCE
+    assert BONJOUR_SEQUENCE == ["B", "O", "N", "J", "O", "U", "R"]
 
 
 # ---------------------------------------------------------------------------

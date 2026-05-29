@@ -4,7 +4,6 @@ import math
 
 from utils.gesture_action import GestureAction
 
-# ############### CODE IA (Claude) ################
 class ZoomManager(GestureAction):
     """Gère le zoom du flux vidéo via l'écartement de deux mains."""
 
@@ -30,6 +29,7 @@ class ZoomManager(GestureAction):
             self.reset()
             return img, False
         return self.adjust(img, hands_data), True
+# ############### CODE IA (Claude) ################
 
     def adjust(self, img, hands_data: list):
         if self.base_image is None:
@@ -64,6 +64,7 @@ class ZoomManager(GestureAction):
         except Exception as e:
             print(f"Erreur zoom: {e}")
             return self.base_image if self.base_image is not None else img
+# ############### CODE IA (Claude) ################
 
     def reset(self):
         self.start_distance = None
@@ -71,4 +72,3 @@ class ZoomManager(GestureAction):
         self.base_image = None
         self.offset_x = 0
         self.offset_y = 0
-# ########################################

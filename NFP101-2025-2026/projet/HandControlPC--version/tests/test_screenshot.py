@@ -1,5 +1,5 @@
 """
-Tests unitaires - ScreenshotTaker (sans déclenchement réel de capture).
+Tests unitaires : ScreenshotTaker (sans déclenchement réel de capture).
 Exécuter : pytest tests/
 """
 import sys

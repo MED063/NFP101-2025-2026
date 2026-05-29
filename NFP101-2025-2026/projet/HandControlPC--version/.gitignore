@@ -1,0 +1,63 @@
+# Python - bytecode et cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+.Python
+
+# Environnements virtuels Python
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# PyCharm / IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Claude Code - configuration locale
+.claude/settings.local.json
+
+# Screenshots generees par l'application (fichiers runtime)
+screenshots/
+
+# Fichiers de log et temporaires
+*.log
+mouseInfoLog.txt
+*.tmp
+*.temp
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Distribution / packaging Python
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Videos de demonstration (trop volumineuses pour Git)
+demos/
+*.mov
+*.mp4
+
+# Sources LaTeX et artefacts de compilation (seuls les PDF finaux sont versionnes)
+docs/*.tex
+docs/*.aux
+docs/*.toc
+docs/*.nav
+docs/*.snm
+docs/*.out
+docs/presentation.pdf
+
+# Enonce du projet (fourni par l'enseignant)
+Projet.pdf

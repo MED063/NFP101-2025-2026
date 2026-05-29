@@ -2,7 +2,6 @@ import json
 import os
 import copy
 
-# ############### CODE IA (Claude) ################
 _DEFAULT_CONFIG = {
     "camera": {"width": 1280, "height": 720, "index": 0},
     "detection": {
@@ -16,7 +15,6 @@ _DEFAULT_CONFIG = {
     "screenshot": {"folder": "screenshots", "cooldown": 30, "stable_threshold": 0.6},
     "zoom": {"min_scale": 0.5, "max_scale": 3.0}
 }
-
 
 def load_config(path: str = "config.json") -> dict:
     """Charge la configuration depuis un fichier JSON, avec fallback sur les valeurs par défaut."""
@@ -36,4 +34,3 @@ def load_config(path: str = "config.json") -> dict:
     except json.JSONDecodeError as e:
         print(f"[Config] Erreur de parsing JSON : {e}. Utilisation des valeurs par défaut.")
         return copy.deepcopy(_DEFAULT_CONFIG)
-# ########################################

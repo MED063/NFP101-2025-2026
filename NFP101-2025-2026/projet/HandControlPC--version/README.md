@@ -13,6 +13,7 @@ HandControlPC capte les gestes de la main via la webcam et les traduit en action
 | Index seul levé | Contrôle du volume (pincement pouce-index) |
 | 3 doigts levés | Capture d'écran |
 | 2 mains avec écartement | Zoom sur le flux vidéo |
+| Séquence de signes B-O-N-J-O-U-R | Reconnaissance de signes (épeler « BONJOUR ») |
 
 Le projet est structuré en modules Python avec héritage POO, configuration JSON, et tests unitaires automatisés.
 
@@ -55,11 +56,15 @@ pip install -r requirements.txt
 python main.py
 ```
 
-### Contrôle gestuel interactif (signes A, B, L)
+### Reconnaissance de signes — épeler « BONJOUR »
 
 ```bash
 python test_sign_recognition.py
 ```
+
+Épelez les lettres dans l'ordre **B → O → N → J → O → U → R**. Chaque lettre validée
+s'affiche en vert ; une erreur réinitialise la séquence (touche `R` pour réinitialiser
+manuellement). La séquence complète déclenche une synthèse vocale « Bonjour ».
 
 ---
 
@@ -103,11 +108,22 @@ HandControlPC--version/
 │   ├── screenshot.py          # Capture d'écran (hérite GestureAction)
 │   ├── zoom_control.py        # Zoom vidéo (hérite GestureAction)
 │   └── config_loader.py       # Chargement de la configuration JSON
-└── tests/
-    ├── test_gesture_logic.py  # Tests logique gestuelle
-    ├── test_config.py         # Tests configuration
-    └── test_screenshot.py     # Tests héritage et dossiers
+├── tests/
+│   ├── test_gesture_logic.py  # Tests logique gestuelle
+│   ├── test_config.py         # Tests configuration
+│   └── test_screenshot.py     # Tests héritage et dossiers
+└── docs/
+    ├── rapport_projet_POO.pdf        # Documentation technique (PDF)
+    └── HandControlPC_Presentation.pdf # Support de présentation orale
 ```
+
+---
+
+## Documentation et démonstration
+
+- **Documentation technique** : [`docs/rapport_projet_POO.pdf`](docs/rapport_projet_POO.pdf) — contexte, architecture, choix techniques, usage IA.
+- **Présentation orale** : [`docs/HandControlPC_Presentation.pdf`](docs/HandControlPC_Presentation.pdf).
+- **Vidéos de démonstration** : fournies séparément (trop volumineuses pour le dépôt Git).
 
 ---
 
@@ -139,23 +155,24 @@ Autoriser ces permissions dans `Réglages système > Confidentialité et sécuri
 
 ## Usage IA
 
-Ce projet a été développé avec l'assistance de **Claude Code (Anthropic)** pour les parties suivantes :
+Deux outils d'IA ont été utilisés et sont déclarés ci-dessous :
 
-| Usage | Description |
-|-------|-------------|
-| Architecture POO | Conception de la classe abstraite `GestureAction` et refactorisation en héritage |
-| Tests unitaires | Génération des cas de tests sans webcam (mocks, cas limites) |
-| Config loader | Module `config_loader.py` avec deepcopy et fallback |
-| Debug | Correction du bug de shallow copy dans le chargement de config |
+| IA | Fichier(s) concerné(s) | Apport |
+|----|------------------------|--------|
+| **Claude (Anthropic)** | `utils/volume_control.py` (classe `VolumeController`, `_get_volume`, `_set_volume`) | Assistance à l'écriture |
+| **Claude (Anthropic)** | `utils/zoom_control.py` (méthode `adjust()`) | Assistance à l'écriture |
+| **GitHub Copilot** | `main.py` | Refactorisation légère |
 
-Tout le code généré par IA est encadré dans le code source avec :
+Le code assisté par Claude est encadré dans le code source avec :
 ```python
 # ############### CODE IA (Claude) ################
 ...
 # ########################################
 ```
 
-Les algorithmes de détection gestuelle, la logique de mode, et l'intégration MediaPipe/OpenCV ont été écrits et compris par l'auteur.
+Les algorithmes de détection gestuelle (`fingers_up`), la logique de mode, le choix
+itératif des patterns de signes et l'intégration MediaPipe/OpenCV ont été écrits et
+compris par l'auteur, qui peut expliquer chaque passage assisté.
 
 ---
 

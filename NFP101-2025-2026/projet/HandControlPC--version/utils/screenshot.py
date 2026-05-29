@@ -4,7 +4,6 @@ import mss
 
 from utils.gesture_action import GestureAction
 
-# ############### CODE IA (Claude) ################
 class ScreenshotTaker(GestureAction):
     """Prend une capture d'écran déclenchée par geste."""
 
@@ -46,7 +45,6 @@ class ScreenshotTaker(GestureAction):
         except Exception as e:
             print(f"ERREUR CAPTURE: {e}")
             return False
-# ########################################
 
 
 if __name__ == "__main__":

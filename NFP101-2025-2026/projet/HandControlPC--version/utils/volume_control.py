@@ -36,7 +36,7 @@ class VolumeController(GestureAction):
             )
         except Exception as e:
             print(f"Erreur set volume: {e}")
-
+# ########################################
     def process(self, img, hands_data: list):
         """Ajuste le volume selon la distance pouce-index. Retourne (img, continuer)."""
         if not hands_data or len(hands_data[0]["lmList"]) < 21:
@@ -60,4 +60,3 @@ class VolumeController(GestureAction):
         except Exception as e:
             print(f"Erreur volume: {e}")
         return img
-# ########################################

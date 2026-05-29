@@ -1,5 +1,5 @@
 """
-Tests unitaires - logique gestuelle (sans webcam ni matériel).
+Tests unitaires : logique gestuelle (sans webcam ni matériel).
 Exécuter : pytest tests/
 """
 import sys
@@ -10,9 +10,8 @@ import pytest
 import numpy as np
 
 
-# ---------------------------------------------------------------------------
+
 # Tests : recognize_sign (test_sign_recognition)
-# ---------------------------------------------------------------------------
 from test_sign_recognition import recognize_sign, SIGNS
 
 
@@ -69,9 +68,7 @@ def test_bonjour_sequence_is_correct():
     assert BONJOUR_SEQUENCE == ["B", "O", "N", "J", "O", "U", "R"]
 
 
-# ---------------------------------------------------------------------------
 # Tests : VolumeController (calcul interp, sans appel système)
-# ---------------------------------------------------------------------------
 import math
 
 def test_volume_interpolation():
@@ -100,9 +97,7 @@ def test_volume_distance_calculation():
     assert dist == pytest.approx(5.0)
 
 
-# ---------------------------------------------------------------------------
 # Tests : ZoomManager (logique de scale, sans image réelle)
-# ---------------------------------------------------------------------------
 from utils.zoom_control import ZoomManager
 
 
@@ -132,9 +127,7 @@ def test_zoom_is_gesture_action():
     assert z.name == "Zoom"
 
 
-# ---------------------------------------------------------------------------
 # Tests : fingers_up (logique pure)
-# ---------------------------------------------------------------------------
 
 def make_hand(tip_positions: dict) -> dict:
     """Crée des données de main factices pour tester fingers_up."""

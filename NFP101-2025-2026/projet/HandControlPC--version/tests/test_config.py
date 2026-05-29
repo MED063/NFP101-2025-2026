@@ -1,5 +1,5 @@
 """
-Tests unitaires - chargement de la configuration.
+Tests unitaires : chargement de la configuration.
 Exécuter : pytest tests/
 """
 import sys

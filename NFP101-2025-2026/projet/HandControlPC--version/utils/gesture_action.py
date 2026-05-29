@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import cv2
 
-# ############### CODE IA (Claude) ################
 class GestureAction(ABC):
     """Classe de base abstraite pour toutes les actions gestuelles."""
 
@@ -28,4 +27,3 @@ class GestureAction(ABC):
         cv2.putText(img, f"[{self.name}] {text}", pos,
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
         return img
-# ########################################

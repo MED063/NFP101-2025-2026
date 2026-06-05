@@ -170,10 +170,6 @@ Le code assisté par Claude est encadré dans le code source avec :
 # ########################################
 ```
 
-Les algorithmes de détection gestuelle (`fingers_up`), la logique de mode, le choix
-itératif des patterns de signes et l'intégration MediaPipe/OpenCV ont été écrits et
-compris par l'auteur, qui peut expliquer chaque passage assisté.
-
 ---
 
 ## Stack technique
